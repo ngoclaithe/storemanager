@@ -1,6 +1,6 @@
 import os
 from flask import Flask, url_for, redirect, render_template, request, session, jsonify, send_file
-from db import db, Register, Product, Bill, Treasury
+from db import db, Register, Product, Bill, Treasury, Staff
 from datetime import datetime, timedelta, date
 import hashlib
 import csv
@@ -185,7 +185,16 @@ def update_username():
     else:
         return jsonify({"error": "Không tìm thấy người dùng"}), 401
 
-
+@app.route("/staff", methods=["GET"])
+def amdin_staff():
+    if "user_id" in session and session["usertype"] == "admin":
+        user = Register.query.filter_by(id=session["user_id"]).first()
+        if user:
+            return render_template("admin/staff.html", user_name=user.user)
+        else:
+            return "Không tìm thấy thông tin người dùng"
+    else:
+        return redirect(url_for("login"))
 @app.route("/logout", methods=["GET"])
 def logout():
     session.clear()
@@ -302,6 +311,7 @@ def get_bills():
             Bill.discount,
             Bill.afterdiscount,
             Bill.customerpaid,
+            Bill.id_product
         ).all()
     except ProgrammingError:
         bills = []
@@ -317,6 +327,7 @@ def get_bills():
             "discount": bill.discount,
             "afterdiscount": bill.afterdiscount,
             "customerpaid": bill.customerpaid,
+            "id_product": bill.id_product
         }
         bill_list.append(bill_data)
 
@@ -342,10 +353,12 @@ def admin_transaction():
 def add_bill():
     if request.method == "POST":
         data = request.json
+        print(data)
         items = data.get("items")
         if not items:
             return "Missing items", 400
 
+        id_product = items[0].get("productId")
         type_customer = items[0].get("typeCustomer")
         quantity = items[0].get("quantity")
         totalprice = data.get("totalprice")
@@ -353,10 +366,8 @@ def add_bill():
         afterdiscount = data.get("afterdiscount")
         customerpaid = data.get("customerpaid")
 
-        if not all([type_customer, totalprice, discount, afterdiscount, customerpaid]):
-            return "Missing data", 400
-
         new_bill = Bill(
+            id_product = id_product,
             quantity=quantity,
             type_customer=type_customer,
             totalprice=totalprice,
@@ -466,7 +477,16 @@ def admin_treasury():
     else:
         return redirect(url_for("login"))
 
-
+@app.route("/account", methods=["GET"])
+def admin_account():
+    if "user_id" in session and session["usertype"] == "admin":
+        user = Register.query.filter_by(id=session["user_id"]).first()
+        if user:
+            return render_template("admin/account.html", user_name=user.user)
+        else:
+            return "Không tìm thấy thông tin người dùng"
+    else:
+        return redirect(url_for("login"))    
 @app.route("/report", methods=["GET"])
 def admin_report():
     if "user_id" in session and session["usertype"] == "admin":
@@ -572,6 +592,8 @@ def search_product():
 @app.route("/sales_today")
 def sales_today():
     today = date.today()
+    yesterday = today - timedelta(days=1)
+
     sales_today = (
         db.session.query(func.sum(Bill.quantity))
         .filter(func.date(Bill.date) == today)
@@ -583,11 +605,24 @@ def sales_today():
         .scalar()
     )
 
+    sold_product = (
+        db.session.query(func.count(func.distinct(Bill.id_product)))
+        .filter(func.date(Bill.date) == today)
+        .scalar()
+    )
+
+    revenue_yesterday = (
+        db.session.query(func.sum(Bill.totalprice))
+        .filter(func.date(Bill.date) == yesterday)
+        .scalar()
+    )
+
     sales_today = sales_today if sales_today else 0
     revenue_today = revenue_today if revenue_today else 0
+    sold_product = sold_product if sold_product else 0
+    revenue_yesterday = revenue_yesterday if revenue_yesterday else 0
 
     sales_over_time = {"times": [], "quantities": []}
-
     sales_data = (
         db.session.query(
             func.strftime("%H:%M", Bill.date).label("hour"),
@@ -606,6 +641,8 @@ def sales_today():
         {
             "sold_today": sales_today,
             "revenue_today": revenue_today,
+            "sold_product": sold_product,
+            "revenue_yesterday": revenue_yesterday,
             "sales_over_time": sales_over_time,
         }
     )
@@ -664,8 +701,59 @@ def export_file_treasury():
     except Exception as e:
         print("Exception occurred:", str(e))
         return jsonify({"message": str(e)}), 500
+def get_staffs():
+    try:
+        staffs = Staff.query.with_entities(
+            Staff.id_staff,
+            Staff.type_staff,
+            Staff.name_staff,
+            Staff.date_birth,
+            Staff.home_town,
+            Staff.phone
+        ).all()
+    except ProgrammingError:
+        staffs = []
 
+    staff_list = []
+    for staff in staffs:
+        staff_data = {
+            "id_staff": staff.id_staff,
+            "type_staff": staff.type_staff,
+            "name_staff": staff.name_staff,
+            "date_birth": staff.date_birth,
+            "home_town": staff.home_town,
+            "phone": staff.phone
+        }
+        staff_list.append(staff_data)
 
+    return staff_list        
+@app.route("/list_staff", methods=["GET"])
+def list_staff():
+    try:
+        staff_list = get_staffs()
+        return jsonify(staff_list), 200
+    except Exception as e:
+        print("Exception occurred:", str(e))
+        return jsonify({"message": str(e)}), 500
+@app.route("/add_staff", methods=["POST"])
+def add_staff():
+    if request.method == "POST":
+        data = request.json
+        try:
+            new_staff = Staff(
+                name_staff=data.get('name_staff'),
+                date_birth=data.get('date_birth'),
+                home_town=data.get('home_town'),
+                type_staff=data.get('type_staff'),
+                phone=data.get('phone')
+            )
+            db.session.add(new_staff)
+            db.session.commit()
+            return jsonify({"message": "Staff added successfully"}), 200
+        except Exception as e:
+            print("Exception occurred:", str(e))
+            db.session.rollback()
+            return jsonify({"message": str(e)}), 500 
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()

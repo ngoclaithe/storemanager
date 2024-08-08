@@ -199,6 +199,7 @@
 
 
         function addToBill() {
+            
             var quantity = parseFloat($('#quantity').val());
             var unit = $('#unit').val();
             var discount = parseFloat($('#discount').val());
@@ -207,6 +208,7 @@
             var totalPriceAfterDiscount = totalPrice - (totalPrice * discount / 100);
 
             var billItem = {
+                productId: selectedProduct.id, 
                 productName: selectedProduct.name,
                 quantity: quantity,
                 unit: unit,

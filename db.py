@@ -38,6 +38,7 @@ class Bill(db.Model):
     discount = db.Column(db.Integer, nullable=True)
     afterdiscount = db.Column(db.Integer, nullable=True)
     customerpaid = db.Column(db.Integer, nullable=True)
+    id_product = db.Column(db.Integer, nullable=False)
 
 class Treasury(db.Model):
     __tablename__ = 'treasury'
@@ -51,3 +52,12 @@ class Treasury(db.Model):
     note = db.Column(db.String(255), nullable=True)
     user_create = db.Column(db.String(255), nullable=False)
 
+class Staff(db.Model):
+    __tablename__ = 'staff'
+    
+    id_staff = db.Column(db.Integer, primary_key=True)
+    type_staff = db.Column(db.String(255), nullable=True)
+    name_staff = db.Column(db.String(255), nullable=True)
+    date_birth = db.Column(db.String(255), nullable=True)
+    home_town = db.Column(db.String(255), nullable=True)
+    phone = db.Column(db.Integer, nullable=True)

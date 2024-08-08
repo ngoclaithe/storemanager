@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý nhân viên</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            position: relative;
+        }
+
+        .sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #007bff;
+            padding-top: 20px;
+        }
+
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 18px;
+            color: white;
+            display: block;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            background-color: #0056b3;
+        }
+
+        .content {
+            margin-left: 270px;
+            padding: 20px;
+        }
+
+        #staff-table {
+            margin-top: 20px;
+            display: none;
+        }
+
+        #add-staff-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #28a745;
+            color: white;
+            border-radius: 50%;
+            font-size: 24px;
+            width: 60px;
+            height: 60px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+
+        #add-staff-btn:hover {
+            background-color: #218838;
+        }
+
+        .modal-header {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .modal-content {
+            border-radius: 10px;
+        }
+
+        .modal-body label {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <a href="/overview">Tổng quan</a>
+        <a href="/product">Hàng hóa</a>
+        <a href="/transaction">Giao dịch</a>
+        <a href="/treasury">Sổ quỹ</a>
+        <a href="/report">Báo cáo</a>
+        <a href="/staff">Nhân viên</a>
+        <a href="/account">Tài khoản</a>
+    </div>
+
+    <div class="content">
+        <h1>Quản lý nhân viên</h1>
+        <select id="reportSelect" class="form-control">
+            <option value="">Chọn</option>
+            <option value="/list_staff">Xem danh sách nhân viên</option>
+            <option value="/time_keeping">Chấm công</option>
+            <option value="/payroll">Tạo bảng tính lương</option>
+        </select>
+
+        <div id="staff-table" class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên</th>
+                        <th>Ngày sinh</th>
+                        <th>Quê quán</th>
+                        <th>Chức vụ</th>
+                        <th>Số điện thoại</th>
+                    </tr>
+                </thead>
+                <tbody id="staffTableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <div id="add-staff-btn" data-toggle="modal" data-target="#addStaffModal">+</div>
+    </div>
+
+    <!-- Modal thêm nhân viên -->
+    <div class="modal fade" id="addStaffModal" tabindex="-1" aria-labelledby="addStaffModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addStaffModalLabel">Thêm nhân viên</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="addStaffForm">
+                        <div class="form-group">
+                            <label for="name_staff">Tên nhân viên</label>
+                            <input type="text" class="form-control" id="name_staff" name="name_staff" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="date_birth">Ngày sinh</label>
+                            <input type="date" class="form-control" id="date_birth" name="date_birth" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="home_town">Quê quán</label>
+                            <input type="text" class="form-control" id="home_town" name="home_town" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="type_staff">Chức vụ</label>
+                            <input type="text" class="form-control" id="type_staff" name="type_staff" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Số điện thoại</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Gửi</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('reportSelect').addEventListener('change', function () {
+            var selectedEndpoint = this.value;
+            if (selectedEndpoint === '/list_staff') {
+                fetch(selectedEndpoint)
+                    .then(response => response.json())
+                    .then(data => {
+                        var tableBody = document.getElementById('staffTableBody');
+                        tableBody.innerHTML = '';
+                        data.forEach(staff => {
+                            var row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${staff.id_staff}</td>
+                                <td>${staff.name_staff}</td>
+                                <td>${staff.date_birth}</td>
+                                <td>${staff.home_town}</td>
+                                <td>${staff.type_staff}</td>
+                                <td>${staff.phone}</td>
+                            `;
+                            tableBody.appendChild(row);
+                        });
+                        document.getElementById('staff-table').style.display = 'block';
+                        document.getElementById('add-staff-btn').style.display = 'flex';
+                    })
+                    .catch(error => console.error('Error:', error));
+            } else {
+                document.getElementById('staff-table').style.display = 'none';
+                document.getElementById('add-staff-btn').style.display = 'none';
+            }
+        });
+
+        document.getElementById('addStaffForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            var formData = new FormData(this);
+            var jsonObject = {};
+            formData.forEach((value, key) => {
+                jsonObject[key] = value;
+            });
+
+            fetch('/add_staff', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jsonObject)
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Nhân viên đã được thêm thành công');
+                    location.reload();
+                } else {
+                    alert('Thêm nhân viên thất bại');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

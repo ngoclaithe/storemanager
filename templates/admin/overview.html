@@ -120,7 +120,9 @@
         <a href="/product">Hàng hóa</a>
         <a href="/transaction">Giao dịch</a>
         <a href="/treasury">Sổ quỹ</a>
-        <a href="/report">Báo cáo</a>   
+        <a href="/report">Báo cáo</a>
+        <a href="/staff">Nhân viên</a>
+        <a href="/account">Tài khoản</a>   
     </div>
 
     <div class="content">
@@ -136,12 +138,12 @@
                 <p id="revenue-today">0</p>
             </div>
             <div class="widget widget-orange">
-                <h2>Người dùng mới</h2>
-                <p id="new-users">0</p>
+                <h2>Loại sản phẩm bán</h2>
+                <p id="sold-product">0</p>
             </div>
             <div class="widget widget-red">
-                <h2>Khách hàng duy nhất</h2>
-                <p id="unique-visitors">0</p>
+                <h2>Doanh thu hôm qua</h2>
+                <p id="revenue-yesterday">0</p>
             </div>
         </div>
 
@@ -170,8 +172,8 @@
 
             document.getElementById('sold-today').innerText = data.sold_today;
             document.getElementById('revenue-today').innerText = data.revenue_today;
-            document.getElementById('new-users').innerText = data.new_users;
-            document.getElementById('unique-visitors').innerText = data.unique_visitors;
+            document.getElementById('sold-product').innerText = data.sold_product;
+            document.getElementById('revenue-yesterday').innerText = data.revenue_yesterday;
             renderChart(data.sales_over_time);
         }
 
