@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách đăng ký sử dụng phòng</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../static/css/product.css">
+</head>
+
+<body>
+    <div class="sidebar">
+        <a href="/overview">Tổng quan</a>
+        <a href="/product">Hàng hóa</a>
+        <a href="/transaction">Giao dịch</a>
+        <a href="/treasury">Sổ quỹ</a>
+        <a href="/report">Báo cáo</a>   
+    </div>
+
+    <div class="content">
+        <h1>Danh sách hàng hóa</h1>
+        <p id="realtime-data"></p>
+        <!-- <button id="filterWaitAdminBtn" class="btn btn-primary mb-3">Yêu cầu dạy bù</button> -->
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Mã hàng</th>
+                    <th>Tên hàng</th>
+                    <th>Giá vốn</th>
+                    <th>Giá bán</th>
+                    <th>Tồn kho</th>
+                    <!-- <th>Dự kiến hết hàng</th> -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for product  in products  %}
+                <tr data-id="{{ product.id_product }}">
+                    <td >{{ product.plu }}</td>
+                    <!-- <td >{{ product.barcode }}</td> -->
+                    <td >{{ product.nameproduct }}</td>
+                    <!-- <td >{{ product.groupproduct }}</td> -->
+                    <!-- <td >{{ product.brand }}</td> -->
+                    <td >{{ product.costcapital }}</td>
+                    <td >{{ product.price }}</td>
+                    <td >{{ product.inventory }}</td>
+                    <!-- <td >{{ product.unit }}</td> -->
+                    <td class="action-buttons">
+                        <button onclick="deleteRegister('{{ product.id_product }}')">Xóa</button>
+                        <button onclick="updateProduct('{{ product.id_product }}')">Sửa</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <button id="addRegisterBtn">+</button>
+    <button id="exportExcelBtn"></button>
+
+    <div id="updateModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('updateModal')">&times;</span>
+            <h2>Sửa Đăng Ký</h2>
+            <form id="updateProductForm" method="POST">
+                <input type="hidden" id="update_id_product" name="id_product">
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="update_plu">Mã hàng:</label>
+                        <input type="text" id="update_plu" name="plu">
+                    </div>
+                    <div class="form-group">
+                        <label for="update_barcode">Mã vạch:</label>
+                        <input type="text" id="update_barcode" name="barcode">
+                    </div>
+                </div>
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="update_nameproduct">Tên hàng:</label>
+                        <input type="text" id="update_nameproduct" name="nameproduct">
+                    </div>
+                    <div class="form-group">
+                        <label for="update_groupproduct">Nhóm hàng:</label>
+                        <input type="text" id="update_groupproduct" name="groupproduct">
+                    </div>
+                </div>
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="update_brand">Thương hiệu:</label>
+                        <input type="text" id="update_brand" name="brand">
+                    </div>
+                    <div class="form-group">
+                        <label for="update_costcapital">Giá vốn:</label>
+                        <input type="text" id="update_costcapital" name="costcapital">
+                    </div>
+                </div>
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="update_price">Giá bán:</label>
+                        <input type="text" id="update_price" name="price">
+                    </div>
+                    <div class="form-group">
+                        <label for="update_inventory">Tồn kho:</label>
+                        <input type="text" id="update_inventory" name="inventory">
+                    </div>
+                </div>
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="update_unit">Đơn vị:</label>
+                        <input type="text" id="update_unit" name="unit">
+                    </div>
+                    <div class="form-group">
+                        <label for="update_path_image">Ảnh sản phẩm:</label>
+                        <input type="file" id="update_path_image" name="path_image">
+                    </div>
+                </div>
+                <button type="submit" id="submitUpdateBtn">Cập Nhật</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="addProduct" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addProduct')">&times;</span>
+            <h2>Thêm Hàng Hóa</h2>
+            <form id="addProductForm" method="POST" enctype="multipart/form-data">
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="plu">Mã hàng:</label>
+                        <input type="text" id="plu" name="plu">
+                    </div>
+                    <div class="form-group">
+                        <label for="barcode">Mã vạch:</label>
+                        <input type="text" id="barcode" name="barcode">
+                    </div>
+                </div>
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="nameproduct">Tên hàng:</label>
+                        <input type="text" id="nameproduct" name="nameproduct">
+                    </div>
+                    <div class="form-group">
+                        <label for="groupproduct">Nhóm hàng:</label>
+                        <input type="text" id="groupproduct" name="groupproduct">
+                    </div>
+                </div>
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="brand">Thương hiệu:</label>
+                        <input type="text" id="brand" name="brand">
+                    </div>
+                    <div class="form-group">
+                        <label for="costcapital">Giá vốn:</label>
+                        <input type="text" id="costcapital" name="costcapital">
+                    </div>
+                </div>
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="price">Giá bán:</label>
+                        <input type="text" id="price" name="price">
+                    </div>
+                    <div class="form-group">
+                        <label for="inventory">Tồn kho:</label>
+                        <input type="text" id="inventory" name="inventory">
+                    </div>
+                </div>
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="unit">Đơn vị:</label>
+                        <input type="text" id="unit" name="unit">
+                    </div>
+                    <div class="form-group">
+                        <label for="path_image">Ảnh sản phẩm:</label>
+                        <input type="file" id="path_image" name="path_image">
+                    </div>
+                </div>
+                <button type="submit">Thêm</button>
+            </form>
+        </div>
+    </div>
+    <p id="realtime-data"></p>
+    <script>
+        var userName = "{{ user_name }}";
+    </script>
+    <script src="../../static/script/script.js"></script>
+    <script src="../../static/script/product.js"></script>
+</body>
+
+</html>

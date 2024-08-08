@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giao dịch</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0; 
+            margin: 0;
+            padding: 0;
+            position: relative; 
+        }
+        .sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #007bff; 
+            padding-top: 20px;
+        }
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 18px;
+            color: white;
+            display: block;
+            transition: background-color 0.3s ease;
+        }
+        .sidebar a:hover {
+            background-color: #0056b3; 
+        }
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+        .content h1 {
+            color: #333; 
+        }
+        .content p {
+            color: #666; 
+        }
+        #realtime-data {
+            position: absolute; 
+            top: 20px; 
+            right: 20px; 
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        td {
+            background-color: #f2f2f2;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+        .action-buttons button {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .action-buttons button:hover {
+            background-color: #0056b3;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <a href="/overview">Tổng quan</a>
+        <a href="/product">Hàng hóa</a>
+        <a href="/transaction">Giao dịch</a>
+        <a href="/treasury">Sổ quỹ</a>
+        <a href="/report">Báo cáo</a>   
+    </div>
+
+    <div class="content">
+        <h1>Hóa Đơn</h1>
+        <p id="realtime-data"></p>
+        <button id="addBill" class="btn btn-primary mb-3" onclick="openNewTab()">+ Tạo hóa đơn</button>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Mã hóa đơn</th>
+                    <th>Thời gian</th>
+                    <th>Khách hàng</th>
+                    <th>Tổng tiền hàng</th>
+                    <th>Giảm giá</th>
+                    <th>Tổng sau giảm giá</th>
+                    <th>Khách đã trả</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bill in bills %}
+                <tr>
+                    <td>{{ bill.code_bill }}</td>
+                    <td>{{ bill.date }}</td>
+                    <td>{{ bill.type_customer }}</td>
+                    <td>{{ bill.totalprice }}</td>
+                    <td>{{ bill.discount }}</td>
+                    <td>{{ bill.afterdiscount }}</td>
+                    <td>{{ bill.customerpaid }}</td>
+                    <td class="action-buttons">
+                        <button onclick="deleteBill('{{ bill.id_bill }}')">Xóa</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <script>
+        function openNewTab() {
+            window.open('/add_bill_page', '_blank');
+        }
+        
+        function deleteBill(billId) {
+            fetch('/delete_bill', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id_bill: billId }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Xóa hóa đơn thất bại');
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+
+        function updateRealtimeData() {
+            var currentDate = new Date();
+            var currentTime = currentDate.toLocaleTimeString();
+            document.getElementById("realtime-data").innerHTML = "Tài khoản: {{ user_name }}, " + currentTime;
+        }
+
+        setInterval(updateRealtimeData, 1000); 
+    </script>
+</body>
+</html>

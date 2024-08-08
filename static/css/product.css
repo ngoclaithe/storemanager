@@ -1,0 +1,224 @@
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+
+.sidebar {
+    height: 100%;
+    width: 250px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #007bff;
+    padding-top: 20px;
+}
+
+.sidebar a {
+    padding: 10px 15px;
+    text-decoration: none;
+    font-size: 18px;
+    color: white;
+    display: block;
+    transition: background-color 0.3s ease;
+}
+
+.sidebar a:hover {
+    background-color: #0056b3;
+}
+
+.content {
+    margin-left: 250px;
+    padding: 20px;
+}
+
+.content h1 {
+    color: #333;
+}
+
+.content p {
+    color: #666;
+}
+
+#realtime-data {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: #333;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th,
+td {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+th {
+    background-color: #e56e07;
+    color: white;
+}
+
+td {
+    background-color: #f2f2f2;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.action-buttons button {
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.action-buttons button:hover {
+    background-color: #0056b3;
+    color: white;
+}
+
+#addRegisterBtn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+#addRegisterBtn:hover {
+    background-color: #ee4e0f;
+}
+#exportExcelBtn {
+    position: fixed;
+    bottom: 80px; 
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    background-image: url('../../static/img/icons8-excel-48.png'); 
+    background-size: 60%; 
+    background-position: center;
+    background-repeat: no-repeat;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#exportExcelBtn:hover {
+    background-color: #218838;
+}
+.modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fefefe;
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 8px;
+    z-index: 1000;
+    width: 80%;
+    max-width: 1200px;
+    max-height: 80%;
+    overflow-y: auto;
+    background-color: #ea670a; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal .modal-content {
+    padding: 20px;
+}
+
+.modal input[type="date"],
+.modal input[type="text"],
+.modal select {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f6f2f2; 
+}
+
+.modal input[type="date"]:focus,
+.modal input[type="text"]:focus,
+.modal select:focus {
+    border-color: #007bff;
+    background-color: #ffffff;
+}
+
+.modal .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.modal .close:hover,
+.modal .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal button[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    float: right;
+}
+
+.modal button[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+.modal h2 {
+    color: #333;
+}
+
+.modal label {
+    font-weight: bold;
+    color: #333;
+}
+.form-group-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+.form-group {
+    display: flex;
+    align-items: center;
+    width: 48%; /* Adjust width to fit two form groups in a row */
+}
+.form-group label {
+    flex: 0 0 100px; /* Adjust the width of the label */
+    margin-right: 10px;
+}
+.form-group input {
+    flex: 1;
+    padding: 5px;
+}

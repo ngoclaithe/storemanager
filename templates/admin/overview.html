@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Overview</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        .sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #007bff;
+            padding-top: 20px;
+        }
+
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 18px;
+            color: white;
+            display: block;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            background-color: #0056b3;
+        }
+
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            color: black;
+            text-align: center;
+        }
+
+        .content h1 {
+            color: #333;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+
+        .widgets {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 50px;
+        }
+
+        .widget {
+            background-color: white;
+            color: black;
+            padding: 20px;
+            border-radius: 10px;
+            width: 22%;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .widget h2 {
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .widget p {
+            font-size: 24px;
+            margin: 0;
+        }
+
+        .widget-blue {
+            background-color: #17a2b8;
+            color: white;
+        }
+
+        .widget-green {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .widget-orange {
+            background-color: #ffc107;
+            color: white;
+        }
+
+        .widget-red {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        #chart-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .map-container {
+            margin-top: 50px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <a href="/overview">Tổng quan</a>
+        <a href="/product">Hàng hóa</a>
+        <a href="/transaction">Giao dịch</a>
+        <a href="/treasury">Sổ quỹ</a>
+        <a href="/report">Báo cáo</a>   
+    </div>
+
+    <div class="content">
+        <h1>Tổng quan</h1>
+
+        <div class="widgets">
+            <div class="widget widget-blue">
+                <h2>Số lượng hàng bán ra hôm nay</h2>
+                <p id="sold-today">0</p>
+            </div>
+            <div class="widget widget-green">
+                <h2>Doanh thu hôm nay</h2>
+                <p id="revenue-today">0</p>
+            </div>
+            <div class="widget widget-orange">
+                <h2>Người dùng mới</h2>
+                <p id="new-users">0</p>
+            </div>
+            <div class="widget widget-red">
+                <h2>Khách hàng duy nhất</h2>
+                <p id="unique-visitors">0</p>
+            </div>
+        </div>
+
+        <div id="chart-container">
+            <canvas id="salesChart"></canvas>
+        </div>
+
+        <div class="map-container">
+            <h2>Visitors</h2>
+            <div id="worldMap" style="height: 400px;"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css" />
+
+    <script>
+        var userName = "{{ user_name }}";
+
+        async function fetchSalesData() {
+            const response = await fetch('/sales_today');
+            const data = await response.json();
+
+            document.getElementById('sold-today').innerText = data.sold_today;
+            document.getElementById('revenue-today').innerText = data.revenue_today;
+            document.getElementById('new-users').innerText = data.new_users;
+            document.getElementById('unique-visitors').innerText = data.unique_visitors;
+            renderChart(data.sales_over_time);
+        }
+
+        function renderChart(salesData) {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: salesData.times,
+                    datasets: [{
+                        label: 'Số lượng bán',
+                        data: salesData.quantities,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            beginAtZero: true
+                        },
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function initializeMap() {
+            const map = L.map('worldMap').setView([20, 0], 2);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19
+            }).addTo(map);
+        }
+
+        fetchSalesData();
+        initializeMap();
+    </script>
+</body>
+
+</html>

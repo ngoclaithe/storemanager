@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký phòng</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../static/css/register_room.css">
+</head>
+
+<body>
+    <div class="sidebar">
+        <a href="/manager_room_teacher">Danh sách phòng</a>
+        <a href="/register_room">Đăng ký sử dụng phòng</a>
+        <a href="/schedule_teacher">Lịch giảng dạy</a>
+        <a href="/manager_account_teacher">Tài khoản</a>
+    </div>
+
+    <div class="content">
+        <h1>Đăng ký sử dụng phòng</h1>
+        <form id="registerRoom" method="POST">
+            <div class="form-row">
+                <div>
+                    <label for="date">Ngày:</label>
+                    <input type="date" id="date" name="date" required>
+                </div>
+                <div>
+                    <label for="session">Buổi:</label>
+                    <select id="session" name="session" required>
+                        <option value="sáng">Sáng</option>
+                        <option value="chiều">Chiều</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="address">Địa chỉ:</label>
+                    <input type="text" id="address" name="address" value="Khu thực hành số 1A - Ngõ 17 Tạ Quang Bửu" readonly><br>
+                </div>
+                <div>
+                    <label for="room">Phòng:</label>
+                    <select id="room" name="room" required>
+                        {% for room in rooms %}
+                            <option value="{{ room.name }}">{{ room.name }}</option>
+                        {% endfor %}
+                    </select><br>
+                </div>
+                <div>
+                    <label for="subject">Môn:</label>
+                    <input type="text" id="subject" name="subject" required><br>
+                </div>
+                <div>
+                    <label for="type">Hình thức:</label>
+                    <input type="text" id="type" name="type" required><br>
+                </div>
+                <div>
+                    <label for="course">Khóa:</label>
+                    <input type="text" id="course" name="course" required><br>
+                </div>
+                <div>
+                    <label for="faculty">Khoa:</label>
+                    <input type="text" id="faculty" name="faculty" value="CNTT" readonly><br>
+                </div>
+                <div>
+                    <label for="major">Nghề:</label>
+                    <input type="text" id="major" name="major" required><br>
+                </div>
+                <div>
+                    <label for="class">Lớp:</label>
+                    <input type="text" id="class" name="class" required><br>
+                </div>
+                <div>
+                    <label for="syllabus">Giáo án:</label>
+                    <select id="syllabus" name="syllabus" required>
+                        <option value="có">Có</option>
+                        <option value="không">Không</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="teacher">Giáo viên:</label>
+                    <input type="text" id="teacher" name="teacher" value="{{ user_name }}" readonly><br>
+                </div>
+            </div>
+            <label for="semester">Học kỳ:</label>
+            <select id="semester" name="semester" required>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+            <br>
+            <div class="button-container">
+                <input type="button" id="registerBtn" value="Đăng ký">
+                <input type="button" id="repayBtn" value="Đăng ký dạy bù">
+            </div>
+        </form>
+    </div>
+
+    <p id="realtime-data"></p>
+
+    <script>
+        function updateRealtimeData() {
+            var currentDate = new Date();
+            var currentTime = currentDate.toLocaleTimeString();
+            document.getElementById("realtime-data").innerHTML = "Tài khoản: {{ user_name }}, " + currentTime;
+        }
+
+        setInterval(updateRealtimeData, 1000);
+
+        document.getElementById('registerBtn').addEventListener('click', function() {
+            submitForm('/teacher_register_room');
+        });
+
+        document.getElementById('repayBtn').addEventListener('click', function() {
+            submitForm('/register_repay_debt');
+        });
+
+        function submitForm(endpoint) {
+            var registerRoomForm = document.getElementById('registerRoom');
+            var formData = new FormData(registerRoomForm);
+
+            fetch(endpoint, {
+                method: 'POST',
+                body: formData
+            }).then(response => {
+                if (response.status === 200) {
+                    alert("Đã gửi đơn đăng ký");
+                } else {
+                    console.error('Failed to add room');
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>

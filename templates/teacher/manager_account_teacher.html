@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý tài khoản</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            position: relative;
+        }
+
+        .sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #007bff;
+            padding-top: 20px;
+        }
+
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 18px;
+            color: white;
+            display: block;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            background-color: #0056b3;
+        }
+
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            background-image: url('../../static/img/background.png');
+            background-size: cover;
+            background-position: center;
+            color: white;
+        }
+
+        .content h1 {
+            color: #333;
+        }
+
+        .content p {
+            color: #666;
+            text-align: left;
+            margin-left: 30px;
+            font-size: 16px;
+        }
+
+        .content label {
+            color: #333;
+            display: block;
+            margin-left: 30px;
+            margin-bottom: 5px;
+            font-size: 18px;
+        }
+
+        .user-info {
+            margin: 0 auto;
+            max-width: 400px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-info form {
+            margin-top: 20px;
+        }
+
+        input[type="password"],
+        input[type="text"] {
+            width: calc(100% - 60px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        button[type="submit"],
+        .logout-button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover,
+        .logout-button:hover {
+            background-color: #0056b3;
+        }
+
+        .logout-container {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+        }
+
+        .success-message {
+            color: green;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <a href="/manager_room_teacher">Danh sách phòng</a>
+        <a href="/register_room">Đăng ký sử dụng phòng</a>
+        <a href="/schedule_teacher">Lịch giảng dạy</a>
+        <a href="/manager_account_teacher">Tài khoản</a>
+    </div>
+
+    <div class="logout-container">
+        <form id="logout-form">
+            <button type="submit" class="logout-button">Đăng xuất</button>
+        </form>
+    </div>
+
+    <div class="content">
+        <div class="user-info">
+            <h1>Thông tin tài khoản</h1>
+            <label for="username">Tên người dùng:</label>
+            <p id="username" style="font-weight: bold; font-size: 18px; color: #333;">{{ user_name }}</p>
+            <label for="usertype">Loại tài khoản:</label>
+            <p id="usertype" style="font-weight: bold; font-size: 18px; color: #333;">{{ user_type }}</p>
+            <label for="email">Email:</label>
+            <p id="email" style="font-size: 16px; color: #333;">{{ email }}</p>
+            <form id="change-password-form">
+                <label for="old_password" style="font-size: 18px; color: #333;">Mật khẩu cũ:</label>
+                <input type="password" id="old_password" name="old_password" required><br>
+                <label for="new_password" style="font-size: 18px; color: #333;">Mật khẩu mới:</label>
+                <input type="password" id="new_password" name="new_password" required><br>
+                <button type="submit">Thay đổi mật khẩu</button>
+                <p class="success-message">{{ password_message }}</p>
+            </form>
+            <form id="update-username-form">
+                <label for="new_username" style="font-size: 18px; color: #333;">Tên người dùng mới:</label>
+                <input type="text" id="new_username" name="new_username" required><br>
+                <button type="submit">Cập nhật tên người dùng</button>
+                <p class="success-message">{{ username_message }}</p>
+            </form>
+        </div>
+    </div>
+    <p id="realtime-data"></p>
+    <script>
+        document.getElementById("change-password-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+            fetch('/change_password', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (response.status === 200) {
+                        alert("Đã thay đổi mật khẩu thành công");
+                        location.reload();
+                    } else {
+                        alert("Thay đổi mật khẩu không thành công");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+
+        document.getElementById("update-username-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+            fetch('/update_username', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (response.status === 200) {
+                        alert("Đã cập nhật tên người dùng thành công");
+                        location.reload();
+                    } else {
+                        alert("Thay đổi tên người dùng không thành công");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+
+        document.getElementById("logout-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+            fetch('/logout', {
+                method: 'GET'
+            })
+                .then(response => {
+                    if (response.status === 200) {
+                        alert("Đăng xuất thành công");
+                        location.href = '/login_page';
+                    } else {
+                        alert("Đăng xuất không thành công");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+    </script>
+</body>
+
+</html>

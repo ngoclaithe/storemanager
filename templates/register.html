@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <style>
+        body {
+            background-image: url('../../static/img/login.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.8); 
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 400px;
+            margin: auto;
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .container h2 {
+            text-align: center;
+        }
+        .container form {
+            display: flex;
+            flex-direction: column;
+        }
+        .container label {
+            margin-top: 10px;
+        }
+        .container input {
+            padding: 10px;
+            margin-top: 5px;
+        }
+        .container button {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .container .switch-button {
+            background-color: #6c757d;
+        }
+        .logo {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+        .logo img {
+            height: 50px; 
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">
+        <a href="{{ url_for('login') }}">
+            <img src="../../static/img/logo_login.png" alt="Logo">
+        </a>
+    </div>
+    <div class="container">
+        <h2>Register</h2>
+        <form action="{{ url_for('register') }}" method="post" onsubmit="return validateForm()">
+            <label for="user">Username:</label>
+            <input type="text" id="user" name="user" required>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <label for="secretquestion">Favorite animal:</label>
+            <input type="secretquestion" id="secretquestion" name="secretquestion" required>
+            <button type="submit">Register</button>
+        </form>
+        <form action="{{ url_for('login_page') }}" method="get">
+            <button type="submit" class="switch-button">Login</button>
+        </form>
+    </div>
+    <script>
+        function validateForm() {
+            var password = document.getElementById("password").value;
+            if (password.length < 8) {
+                alert("Password must be at least 8 characters long.");
+                return false;
+            }
+            return true;
+        }
+    </script>
+</body>
+</html>
