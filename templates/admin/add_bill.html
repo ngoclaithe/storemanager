@@ -155,6 +155,14 @@
                 </tfoot>
             </table>
             <div class="form-group total-section">
+                <label for="name_customer">Tên khách hàng:</label>
+                <input type="text" id="name_customer" class="form-control" name="name_customer" required>
+            </div>
+            <div class="form-group total-section">
+                <label for="phone_customer">Số điện thoại khách hàng:</label>
+                <input type="number" id="phone_customer" class="form-control" name="phone_customer" required>
+            </div>
+            <div class="form-group total-section">
                 <label for="amountPaid">Khách hàng trả:</label>
                 <input type="number" id="amountPaid" class="form-control" placeholder="Nhập số tiền khách hàng trả">
             </div>
@@ -284,7 +292,8 @@
                     discount: parseFloat($('#discount').val()) || 0,
                     afterdiscount: parseFloat($('#totalAmount').text()) - (parseFloat($('#totalAmount').text()) * (parseFloat($('#discount').val()) || 0) / 100),
                     customerpaid: parseFloat($('#amountPaid').val()) || 0,
-                    type_customer: $('input[name="type_customer"]:checked').val()
+                    name_customer: $('#name_customer').val(),
+                    phone_customer: $('#phone_customer').val()
                 };
 
                 $.ajax({

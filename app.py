@@ -1,6 +1,15 @@
 import os
-from flask import Flask, url_for, redirect, render_template, request, session, jsonify, send_file
-from db import db, Register, Product, Bill, Treasury, Staff
+from flask import (
+    Flask,
+    url_for,
+    redirect,
+    render_template,
+    request,
+    session,
+    jsonify,
+    send_file,
+)
+from db import db, Register, Product, Bill, Treasury, Staff, Customer, Timekeeping
 from datetime import datetime, timedelta, date
 import hashlib
 import csv
@@ -9,6 +18,7 @@ from io import StringIO
 import math
 from PIL import Image, ImageDraw
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
@@ -24,7 +34,7 @@ from sqlalchemy import func, extract
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
-UPLOAD_FOLDER = "imageproduct"
+UPLOAD_FOLDER = "static\images"
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
 # Configure SQLite database
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///quanlypbanhang.db"
@@ -58,8 +68,8 @@ def login():
             session["usertype"] = user.usertype
             if user.usertype == "admin":
                 return redirect(url_for("admin_overview"))
-            elif user.usertype == "employee":
-                return redirect(url_for("employee_overview"))
+            elif user.usertype in ["nhanvienkho", "nhanvienbanhang", "nhanvienthuquy"]:
+                return redirect(url_for("staff_timekeeping"))
         else:
             return "Notok", 400
     return render_template("login.html")
@@ -185,6 +195,7 @@ def update_username():
     else:
         return jsonify({"error": "Không tìm thấy người dùng"}), 401
 
+
 @app.route("/staff", methods=["GET"])
 def amdin_staff():
     if "user_id" in session and session["usertype"] == "admin":
@@ -195,6 +206,8 @@ def amdin_staff():
             return "Không tìm thấy thông tin người dùng"
     else:
         return redirect(url_for("login"))
+
+
 @app.route("/logout", methods=["GET"])
 def logout():
     session.clear()
@@ -252,6 +265,30 @@ def admin_overview():
         return redirect(url_for("login"))
 
 
+@app.route("/staff_timekeeping", methods=["GET"])
+def staff_timekeeping():
+    if "user_id" in session and session["usertype"] in [
+        "nhanvienkho",
+        "nhanvienbanhang",
+        "nhanvienthuquy",
+    ]:
+        user = Register.query.filter_by(id=session["user_id"]).first()
+        if user:
+            staff = Staff.query.filter_by(phone=user.phone).first()
+            if staff:
+                return render_template(
+                    "staff_timekeeping.html",
+                    user_id=staff.id_staff,
+                    user_name=user.user,
+                )
+            else:
+                return "Không tìm thấy thông tin nhân viên"
+        else:
+            return "Không tìm thấy thông tin người dùng"
+    else:
+        return redirect(url_for("login"))
+
+
 def get_products():
     products = Product.query.with_entities(
         Product.id_product,
@@ -264,6 +301,7 @@ def get_products():
         Product.price,
         Product.inventory,
         Product.unit,
+        Product.path_image,
     ).all()
 
     product_list = []
@@ -279,6 +317,11 @@ def get_products():
             "price": product.price,
             "inventory": product.inventory,
             "unit": product.unit,
+            "path_image": (
+                url_for("static", filename="images/" + product.path_image)
+                if product.path_image
+                else None
+            ), 
         }
         product_list.append(product_data)
 
@@ -311,7 +354,7 @@ def get_bills():
             Bill.discount,
             Bill.afterdiscount,
             Bill.customerpaid,
-            Bill.id_product
+            Bill.id_product,
         ).all()
     except ProgrammingError:
         bills = []
@@ -327,7 +370,7 @@ def get_bills():
             "discount": bill.discount,
             "afterdiscount": bill.afterdiscount,
             "customerpaid": bill.customerpaid,
-            "id_product": bill.id_product
+            "id_product": bill.id_product,
         }
         bill_list.append(bill_data)
 
@@ -365,18 +408,29 @@ def add_bill():
         discount = data.get("discount")
         afterdiscount = data.get("afterdiscount")
         customerpaid = data.get("customerpaid")
+        name_customer = data.get("name_customer")
+        phone_customer = data.get("phone_customer")
 
         new_bill = Bill(
-            id_product = id_product,
+            id_product=id_product,
             quantity=quantity,
             type_customer=type_customer,
             totalprice=totalprice,
             discount=discount,
             afterdiscount=afterdiscount,
             customerpaid=customerpaid,
+            phone_customer=phone_customer,
+        )
+
+        new_customer = Customer(
+            name_customer=name_customer,
+            phone_customer=phone_customer,
+            type_customer=type_customer,
         )
 
         db.session.add(new_bill)
+        db.session.commit()
+        db.session.add(new_customer)
         db.session.commit()
 
         return "Bill added successfully", 200
@@ -477,6 +531,7 @@ def admin_treasury():
     else:
         return redirect(url_for("login"))
 
+
 @app.route("/account", methods=["GET"])
 def admin_account():
     if "user_id" in session and session["usertype"] == "admin":
@@ -486,7 +541,9 @@ def admin_account():
         else:
             return "Không tìm thấy thông tin người dùng"
     else:
-        return redirect(url_for("login"))    
+        return redirect(url_for("login"))
+
+
 @app.route("/report", methods=["GET"])
 def admin_report():
     if "user_id" in session and session["usertype"] == "admin":
@@ -552,14 +609,13 @@ def add_product():
         db.session.commit()
 
         return "Product added successfully", 200
-
-
 @app.route("/update_product/<int:idProduct>", methods=["POST"])
 def update_product(idProduct):
     if request.method == "POST":
-        data = request.json
-        product = Product.query.get(idProduct)
+        data = request.form
+        files = request.files
 
+        product = Product.query.get(idProduct)
         if product:
             product.plu = data.get("plu", product.plu)
             product.barcode = data.get("barcode", product.barcode)
@@ -571,12 +627,30 @@ def update_product(idProduct):
             product.inventory = data.get("inventory", product.inventory)
             product.unit = data.get("unit", product.unit)
 
+            if "path_image" in files and files["path_image"].filename:
+                file = files["path_image"]
+                if file and allowed_file(file.filename):
+                    filename = secure_filename(file.filename)
+                    file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+                    product.path_image = filename
+
             db.session.commit()
 
             return jsonify({"message": "Cập nhật thành công"}), 200
         else:
             return jsonify({"message": "Không tìm thấy sản phẩm"}), 404
 
+@app.route("/delete_product/<int:idProduct>", methods=["POST"])
+def delete_product(idProduct):
+    if request.method == "POST":
+        product = Product.query.get(idProduct)
+        
+        if product:
+            db.session.delete(product)
+            db.session.commit()
+            return jsonify({"message": "Xóa thành công"}), 200
+        else:
+            return jsonify({"message": "Không tìm thấy sản phẩm"}), 404
 
 @app.route("/search_product")
 def search_product():
@@ -681,6 +755,19 @@ def add_treasury():
 def export_file_treasury():
     try:
         treasurys = get_treasurys()
+        treasury_rows = [
+            [
+                treasury["id_treasury"],
+                treasury["date"],
+                treasury["user_create"],
+                treasury["type_treasury"],
+                treasury["receiver"],
+                treasury["submitter"],
+                treasury["value"],
+                treasury["note"],
+            ]
+            for treasury in treasurys
+        ]
         header = [
             "Mã phiếu",
             "Thời gian",
@@ -694,13 +781,50 @@ def export_file_treasury():
         with open("Baocaosoquy.csv", "w", newline="", encoding="utf-8-sig") as f:
             csv_writer = csv.writer(f)
             csv_writer.writerow(header)
-            csv_writer.writerows(treasurys)
+            csv_writer.writerows(treasury_rows)
 
-        return send_file("Baocaosoquy.csv", as_attachment=True, mimetype='text/csv'), 200
+        return (
+            send_file("Baocaosoquy.csv", as_attachment=True, mimetype="text/csv"),
+            200,
+        )
 
     except Exception as e:
         print("Exception occurred:", str(e))
         return jsonify({"message": str(e)}), 500
+
+
+@app.route("/export_product", methods=["GET"])
+def export_product():
+    try:
+        products = get_products()
+        product_rows = [
+            [
+                product["id_product"],
+                product["nameproduct"],
+                product["costcapital"],
+                product["price"],
+                product["inventory"],
+            ]
+            for product in products
+        ]
+
+        header = ["Mã hàng", "Tên hàng", "Giá vốn", "Giá bán", "Tồn kho"]
+
+        with open("Baocaohanghoa.csv", "w", newline="", encoding="utf-8-sig") as f:
+            csv_writer = csv.writer(f)
+            csv_writer.writerow(header)
+            csv_writer.writerows(product_rows)
+
+        return (
+            send_file("Baocaohanghoa.csv", as_attachment=True, mimetype="text/csv"),
+            200,
+        )
+
+    except Exception as e:
+        print("Exception occurred:", str(e))
+        return jsonify({"message": str(e)}), 500
+
+
 def get_staffs():
     try:
         staffs = Staff.query.with_entities(
@@ -709,7 +833,7 @@ def get_staffs():
             Staff.name_staff,
             Staff.date_birth,
             Staff.home_town,
-            Staff.phone
+            Staff.phone,
         ).all()
     except ProgrammingError:
         staffs = []
@@ -722,11 +846,13 @@ def get_staffs():
             "name_staff": staff.name_staff,
             "date_birth": staff.date_birth,
             "home_town": staff.home_town,
-            "phone": staff.phone
+            "phone": staff.phone,
         }
         staff_list.append(staff_data)
 
-    return staff_list        
+    return staff_list
+
+
 @app.route("/list_staff", methods=["GET"])
 def list_staff():
     try:
@@ -735,25 +861,185 @@ def list_staff():
     except Exception as e:
         print("Exception occurred:", str(e))
         return jsonify({"message": str(e)}), 500
+
+
 @app.route("/add_staff", methods=["POST"])
 def add_staff():
     if request.method == "POST":
         data = request.json
         try:
             new_staff = Staff(
-                name_staff=data.get('name_staff'),
-                date_birth=data.get('date_birth'),
-                home_town=data.get('home_town'),
-                type_staff=data.get('type_staff'),
-                phone=data.get('phone')
+                name_staff=data.get("name_staff"),
+                date_birth=data.get("date_birth"),
+                home_town=data.get("home_town"),
+                type_staff=data.get("type_staff"),
+                phone=data.get("phone"),
             )
+            new_user = Register(
+                user=data.get("name_staff"),
+                email=data.get("staff_email"),
+                password=md5_hash(data.get("staff_password")),
+                usertype=data.get("type_staff"),
+                secret_question=data.get("secret_question"),
+                phone=data.get("phone"),
+            )
+            db.session.add(new_user)
+            db.session.commit()
             db.session.add(new_staff)
             db.session.commit()
+
             return jsonify({"message": "Staff added successfully"}), 200
         except Exception as e:
             print("Exception occurred:", str(e))
             db.session.rollback()
-            return jsonify({"message": str(e)}), 500 
+            return jsonify({"message": str(e)}), 500
+
+
+@app.route("/report_product", methods=["POST"])
+def report_product():
+    if request.method == "POST":
+        today = datetime.utcnow().date()
+        reports = (
+            db.session.query(
+                Product.id_product,
+                Product.nameproduct,
+                db.func.sum(Bill.quantity).label("quantity_sold"),
+                Product.costcapital,
+                Product.price,
+                db.func.sum(Bill.quantity * Product.price).label("revenue"),
+            )
+            .join(Bill, Product.id_product == Bill.id_product)
+            .filter(db.func.date(Bill.date) == today)
+            .group_by(
+                Product.id_product,
+                Product.nameproduct,
+                Product.costcapital,
+                Product.price,
+            )
+            .all()
+        )
+
+        report_list = []
+        for report in reports:
+            report_data = {
+                "id_product": report.id_product,
+                "nameproduct": report.nameproduct,
+                "quantity_sold": report.quantity_sold,
+                "costcapital": report.costcapital,
+                "price": report.price,
+                "revenue": report.revenue,
+            }
+            report_list.append(report_data)
+
+        return jsonify(report_list)
+
+
+@app.route("/report_customer", methods=["POST"])
+def report_customer():
+    if request.method == "POST":
+        today = datetime.utcnow().date()
+
+        reports = (
+            db.session.query(
+                Customer.name_customer,
+                Customer.phone_customer,
+                Customer.type_customer,
+                func.count(Bill.id_product).label("items_purchased"),
+                func.sum(Bill.customerpaid).label("total_paid"),
+            )
+            .join(Bill, Customer.phone_customer == Bill.phone_customer)
+            .filter(func.date(Bill.date) == today)
+            .group_by(
+                Customer.name_customer, Customer.phone_customer, Customer.type_customer
+            )
+            .all()
+        )
+
+        report_list = []
+        for report in reports:
+            report_data = {
+                "name_customer": report.name_customer,
+                "phone_customer": report.phone_customer,
+                "type_customer": report.type_customer,
+                "items_purchased": report.items_purchased,
+                "total_paid": report.total_paid,
+            }
+            report_list.append(report_data)
+
+        return jsonify(report_list)
+
+
+@app.route("/search_staff", methods=["GET"])
+def search_staff():
+    staff_list = Staff.query.with_entities(Staff.id_staff, Staff.name_staff).all()
+    staff_data = [
+        {"id_staff": s.id_staff, "name_staff": s.name_staff} for s in staff_list
+    ]
+    return jsonify(staff_data)
+
+
+@app.route("/get_timekeeping/<int:staff_id>", methods=["GET"])
+def get_timekeeping(staff_id):
+    records = Timekeeping.query.filter_by(id_staff=staff_id).all()
+    timekeeping_data = [
+        {
+            "day": record.day.strftime("%Y-%m-%d"),
+            "checkin": record.checkin.strftime("%H:%M:%S") if record.checkin else None,
+            "checkout": (
+                record.checkout.strftime("%H:%M:%S") if record.checkout else None
+            ),
+        }
+        for record in records
+    ]
+    print(timekeeping_data)
+    return jsonify(timekeeping_data)
+
+
+@app.route("/checkin/<int:staff_id>", methods=["POST"])
+def checkin(staff_id):
+    now = datetime.now()
+    today = now.date()
+    checkin_time = now.time()
+
+    timekeeping_record = Timekeeping.query.filter_by(
+        id_staff=staff_id, day=today
+    ).first()
+
+    if timekeeping_record:
+        return jsonify({"message": "Đã có bản ghi chấm công cho ngày hôm nay"}), 400
+
+    new_record = Timekeeping(id_staff=staff_id, day=today, checkin=checkin_time)
+    db.session.add(new_record)
+    db.session.commit()
+
+    return jsonify({"message": "Check-in thành công"}), 200
+
+
+@app.route("/checkout/<int:staff_id>", methods=["POST"])
+def checkout(staff_id):
+    now = datetime.now()
+    today = now.date()
+    checkout_time = now.time()
+
+    timekeeping_record = Timekeeping.query.filter_by(
+        id_staff=staff_id, day=today
+    ).first()
+
+    if not timekeeping_record:
+        return (
+            jsonify({"message": "Không tìm thấy bản ghi chấm công để check-out"}),
+            400,
+        )
+
+    if timekeeping_record.checkout:
+        return jsonify({"message": "Đã có giờ check-out cho ngày hôm nay"}), 400
+
+    timekeeping_record.checkout = checkout_time
+    db.session.commit()
+
+    return jsonify({"message": "Check-out thành công"}), 200
+
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()

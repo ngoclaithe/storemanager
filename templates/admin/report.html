@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý tài khoản</title>
+    <title>Báo cáo hàng hóa</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
@@ -51,6 +51,36 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             display: none;
         }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .header-title {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
     </style>
 </head>
 
@@ -69,17 +99,23 @@
         <h1>Báo cáo</h1>
         <select id="reportSelect" class="form-control">
             <option value="">Chọn báo cáo</option>
-            <option value="/report_daily">Báo cáo cuối ngày</option>
-            <option value="/report_import">Báo cáo nhập hàng</option>
-            <option value="/report_export">Báo cáo xuất hàng</option>
+            <!-- <option value="/report_import">Báo cáo nhập hàng</option> -->
+            <!-- <option value="/report_export">Báo cáo xuất hàng</option> -->
             <option value="/report_product">Báo cáo hàng hóa</option>
             <option value="/report_customer">Báo cáo khách hàng</option>
-            <option value="/report_supplier">Báo cáo nhà cung cấp</option>
+            <!-- <option value="/report_supplier">Báo cáo nhà cung cấp</option> -->
         </select>
 
         <div id="report-result">
-            <h2>Kết quả báo cáo</h2>
-            <div id="reportContent"></div>
+            <div class="header-title">Kết quả báo cáo</div>
+            <table id="reportTable" class="table table-bordered">
+                <thead id="reportHeader">
+
+                </thead>
+                <tbody id="reportContent">
+
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -92,12 +128,62 @@
                 })
                     .then(response => response.json())
                     .then(data => {
-                        document.getElementById('reportContent').innerHTML = JSON.stringify(data, null, 2);
+                        let reportContent = '';
+                        let reportHeader = '';
+
+                        if (selectedEndpoint === '/report_product') {
+                            reportHeader = `
+                                <tr>
+                                    <th class="text-center">Mã hàng</th>
+                                    <th>Tên hàng</th>
+                                    <th class="text-center">Số lượng bán</th>
+                                    <th class="text-center">Giá vốn</th>
+                                    <th class="text-center">Giá bán</th>
+                                    <th class="text-center">Doanh thu</th>
+                                </tr>
+                            `;
+                            data.forEach(item => {
+                                reportContent += `
+                                    <tr>
+                                        <td class="text-center">${item.id_product}</td>
+                                        <td>${item.nameproduct}</td>
+                                        <td class="text-center">${item.quantity_sold}</td>
+                                        <td class="text-center">${item.costcapital.toLocaleString()}</td>
+                                        <td class="text-center">${item.price.toLocaleString()}</td>
+                                        <td class="text-center">${item.revenue.toLocaleString()}</td>
+                                    </tr>
+                                `;
+                            });
+                        } else if (selectedEndpoint === '/report_customer') {
+                            reportHeader = `
+                                <tr>
+                                    <th class="text-center">Tên khách hàng</th>
+                                    <th class="text-center">Số điện thoại</th>
+                                    <th class="text-center">Loại khách hàng</th>
+                                    <th class="text-center">Số mặt hàng mua</th>
+                                    <th class="text-center">Tổng số tiền đã trả</th>
+                                </tr>
+                            `;
+                            data.forEach(item => {
+                                reportContent += `
+                                    <tr>
+                                        <td class="text-center">${item.name_customer}</td>
+                                        <td class="text-center">${item.phone_customer}</td>
+                                        <td class="text-center">${item.type_customer}</td>
+                                        <td class="text-center">${item.items_purchased}</td>
+                                        <td class="text-center">${item.total_paid.toLocaleString()}</td>
+                                    </tr>
+                                `;
+                            });
+                        }
+
+                        document.getElementById('reportHeader').innerHTML = reportHeader;
+                        document.getElementById('reportContent').innerHTML = reportContent;
                         document.getElementById('report-result').style.display = 'block';
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        document.getElementById('reportContent').innerHTML = 'Có lỗi xảy ra khi lấy dữ liệu báo cáo.';
+                        document.getElementById('reportContent').innerHTML = '<tr><td colspan="6" class="text-center">Có lỗi xảy ra khi lấy dữ liệu báo cáo.</td></tr>';
                         document.getElementById('report-result').style.display = 'block';
                     });
             } else {

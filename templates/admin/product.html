@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh sách đăng ký sử dụng phòng</title>
+    <title>Danh sách hàng hóa</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="../../static/css/product.css">
 </head>
@@ -23,8 +23,6 @@
     <div class="content">
         <h1>Danh sách hàng hóa</h1>
         <p id="realtime-data"></p>
-        <!-- <button id="filterWaitAdminBtn" class="btn btn-primary mb-3">Yêu cầu dạy bù</button> -->
-
         <table>
             <thead>
                 <tr>
@@ -33,23 +31,26 @@
                     <th>Giá vốn</th>
                     <th>Giá bán</th>
                     <th>Tồn kho</th>
-                    <!-- <th>Dự kiến hết hàng</th> -->
+                    <th>Ảnh</th> 
                 </tr>
             </thead>
             <tbody>
-                {% for product  in products  %}
+                {% for product in products %}
                 <tr data-id="{{ product.id_product }}">
-                    <td >{{ product.plu }}</td>
-                    <!-- <td >{{ product.barcode }}</td> -->
-                    <td >{{ product.nameproduct }}</td>
-                    <!-- <td >{{ product.groupproduct }}</td> -->
-                    <!-- <td >{{ product.brand }}</td> -->
-                    <td >{{ product.costcapital }}</td>
-                    <td >{{ product.price }}</td>
-                    <td >{{ product.inventory }}</td>
-                    <!-- <td >{{ product.unit }}</td> -->
+                    <td>{{ product.plu }}</td>
+                    <td>{{ product.nameproduct }}</td>
+                    <td>{{ product.costcapital }}</td>
+                    <td>{{ product.price }}</td>
+                    <td>{{ product.inventory }}</td>
+                    <td>
+                        {% if product.path_image %}
+                        <img src="{{ product.path_image }}" alt="Product Image" class="product-img">
+                        {% else %}
+                        Không có ảnh
+                        {% endif %}
+                    </td>
                     <td class="action-buttons">
-                        <button onclick="deleteRegister('{{ product.id_product }}')">Xóa</button>
+                        <button onclick="deleteProduct('{{ product.id_product }}')">Xóa</button>
                         <button onclick="updateProduct('{{ product.id_product }}')">Sửa</button>
                     </td>
                 </tr>

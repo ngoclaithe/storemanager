@@ -12,7 +12,6 @@ function updateProduct(idProduct) {
     // document.getElementById('update_unit').value = row.children[8].innerText;
     // document.getElementById('update_path_image').value = row.children[9].innerText;
 
-
     document.getElementById('updateModal').style.display = 'block';
 }
 
@@ -25,48 +24,39 @@ window.onclick = function (event) {
         event.target.style.display = "none";
     }
 }
-
 document.getElementById('updateProductForm').addEventListener('submit', function (event) {
     event.preventDefault();
 
     const idProduct = document.getElementById('update_id_product').value;
-    const formData = new FormData(this);
+    const formData = new FormData(this); 
 
     fetch(`/update_product/${idProduct}`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(Object.fromEntries(formData))
+        body: formData 
     })
-        .then(response => {
-            if (response.ok) {
-                alert("Sửa hàng thành công!");
-                location.reload();
-            } else {
-                throw new Error('Xảy ra lỗi khi cập nhật đăng ký.');
-            }
-        })
-        .catch(error => console.error('Lỗi:', error));
+    .then(response => {
+        if (response.ok) {
+            alert("Sửa hàng thành công!");
+            location.reload();
+        } else {
+            throw new Error('Xảy ra lỗi khi cập nhật đăng ký.');
+        }
+    })
+    .catch(error => console.error('Lỗi:', error));
 });
+
 
 function deleteProduct(idProduct) {
     if (confirm("Bạn có chắc chắn muốn xóa mặt hàng này không?")) {
         fetch(`/delete_product/${idProduct}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                id_product: idProduct
-            })
+            method: 'POST'
         })
             .then(response => {
                 if (response.ok) {
                     alert("Xóa thành công!");
                     location.reload();
                 } else {
-                    throw new Error('Xảy ra lỗi khi xóa đăng ký.');
+                    throw new Error('Xảy ra lỗi khi xóa sản phẩm.');
                 }
             })
             .catch(error => console.error('Lỗi:', error));
@@ -99,18 +89,28 @@ addProductForm.addEventListener('submit', function (event) {
 });
 
 document.getElementById("exportExcelBtn").addEventListener("click", function () {
-    fetch('/exportexcel', {
+    fetch('/export_product', {
         method: 'GET'
     })
         .then(response => {
             if (response.ok) {
-                alert("Đã bắt đầu xuất Excel!");
+                return response.blob(); 
             } else {
-                alert("Xuất Excel không thành công. Vui lòng thử lại sau.");
+                throw new Error("Xuất CSV không thành công.");
             }
+        })
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Baocaohanghoa.csv';
+            document.body.appendChild(a);
+            a.click();
+            a.remove(); 
         })
         .catch(error => {
             console.error('Error:', error);
+            alert('Có lỗi xảy ra khi xuất file CSV.');
         });
 });
 

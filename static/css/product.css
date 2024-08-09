@@ -49,7 +49,6 @@ body {
     right: 20px;
     color: #333;
 }
-
 table {
     width: 100%;
     border-collapse: collapse;
@@ -71,7 +70,10 @@ th {
 td {
     background-color: #f2f2f2;
 }
-
+.product-img {
+    width: 50px;
+    height: auto;
+}
 .action-buttons {
     display: flex;
     justify-content: space-between;

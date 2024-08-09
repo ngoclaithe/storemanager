@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chấm Công Nhân Viên</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        .sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #007bff;
+            padding-top: 20px;
+        }
+
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 18px;
+            color: white;
+            display: block;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            background-color: #0056b3;
+        }
+
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            color: black;
+            text-align: center;
+        }
+
+        .content h1 {
+            color: #333;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+
+        .timekeeping-buttons {
+            margin-top: 20px;
+        }
+
+        .timekeeping-buttons button {
+            margin: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <a href="/timekeepingstaff">Chấm công nhân viên</a>
+        <a href="/account">Tài khoản</a>   
+    </div>
+
+    <div class="content">
+        <h1>Chấm Công Nhân Viên</h1>
+        <div class="timekeeping-buttons">
+            <button id="checkinBtn" class="btn btn-primary">Check-in</button>
+            <button id="checkoutBtn" class="btn btn-secondary">Check-out</button>
+        </div>
+    </div>
+
+    <script>
+        var userId = "{{ user_id }}";
+        console.log(userId);
+
+        document.getElementById('checkinBtn').addEventListener('click', function() {
+            if (userId) {
+                fetch(`/checkin/${userId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => alert(data.message))
+                .catch(error => console.error('Lỗi:', error));
+            } else {
+                alert('Có lỗi xảy ra. Vui lòng thử lại.');
+            }
+        });
+
+        document.getElementById('checkoutBtn').addEventListener('click', function() {
+            if (userId) {
+                fetch(`/checkout/${userId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => alert(data.message))
+                .catch(error => console.error('Lỗi:', error));
+            } else {
+                alert('Có lỗi xảy ra. Vui lòng thử lại.');
+            }
+        });
+    </script>
+</body>
+
+</html>

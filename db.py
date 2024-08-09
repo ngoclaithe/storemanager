@@ -11,6 +11,7 @@ class Register(db.Model):
     password = db.Column(db.String(128), nullable=False)
     usertype = db.Column(db.String(20), nullable=False)
     secret_question = db.Column(db.String(255), nullable=False)
+    phone = db.Column(db.String(255), nullable=True)
 
 class Product(db.Model):
     __tablename__ = 'product'
@@ -39,6 +40,7 @@ class Bill(db.Model):
     afterdiscount = db.Column(db.Integer, nullable=True)
     customerpaid = db.Column(db.Integer, nullable=True)
     id_product = db.Column(db.Integer, nullable=False)
+    phone_customer = db.Column(db.Integer, nullable=True)
 
 class Treasury(db.Model):
     __tablename__ = 'treasury'
@@ -61,3 +63,22 @@ class Staff(db.Model):
     date_birth = db.Column(db.String(255), nullable=True)
     home_town = db.Column(db.String(255), nullable=True)
     phone = db.Column(db.Integer, nullable=True)
+
+class Customer(db.Model):
+    __tablename__ = 'customer'
+    
+    id_cusomter = db.Column(db.Integer, primary_key=True)
+    name_customer = db.Column(db.String(255), nullable=True)
+    phone_customer = db.Column(db.Integer, nullable=True)
+    type_customer = db.Column(db.String(255), nullable=True)
+
+class Timekeeping(db.Model):
+    __tablename__ = 'timekeeping'
+    
+    id_timekeeping = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id_staff = db.Column(db.Integer, db.ForeignKey('staff.id_staff'), nullable=False)
+    day = db.Column(db.Date, nullable=False)
+    checkin = db.Column(db.Time, nullable=True)
+    checkout = db.Column(db.Time, nullable=True)
+
+    staff = db.relationship('Staff', backref=db.backref('timekeeping_records', lazy=True))
