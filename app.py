@@ -41,7 +41,8 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///quanlypbanhang.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 db.init_app(app)
-
+with app.app_context():
+    db.create_all()
 
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -302,6 +303,8 @@ def get_products():
         Product.inventory,
         Product.unit,
         Product.path_image,
+        Product.size,
+        Product.color
     ).all()
 
     product_list = []
@@ -322,6 +325,8 @@ def get_products():
                 if product.path_image
                 else None
             ), 
+            "color": product.color,
+            "size": product.size
         }
         product_list.append(product_data)
 
@@ -580,6 +585,8 @@ def add_product():
         price = request.form["price"]
         inventory = request.form["inventory"]
         unit = request.form["unit"]
+        color = request.form["color"]
+        size = request.form["size"]
 
         if "path_image" in request.files:
             file = request.files["path_image"]
@@ -603,6 +610,8 @@ def add_product():
             inventory=inventory,
             unit=unit,
             path_image=path_image,
+            color = color,
+            size = size
         )
 
         db.session.add(new_product)
@@ -616,6 +625,7 @@ def update_product(idProduct):
         files = request.files
 
         product = Product.query.get(idProduct)
+        print(data)
         if product:
             product.plu = data.get("plu", product.plu)
             product.barcode = data.get("barcode", product.barcode)
@@ -626,6 +636,8 @@ def update_product(idProduct):
             product.price = data.get("price", product.price)
             product.inventory = data.get("inventory", product.inventory)
             product.unit = data.get("unit", product.unit)
+            product.size = data.get("size", product.unit)
+            product.color = data.get("color", product.unit)
 
             if "path_image" in files and files["path_image"].filename:
                 file = files["path_image"]
@@ -1038,9 +1050,11 @@ def checkout(staff_id):
     db.session.commit()
 
     return jsonify({"message": "Check-out thành công"}), 200
+@app.route("/salary_staff", methods=["POST"])
+def salary_staff():
+
+application = app
 
 
 if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
     app.run(host="0.0.0.0", debug=True)

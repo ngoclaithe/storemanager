@@ -27,10 +27,15 @@
             <thead>
                 <tr>
                     <th>Mã hàng</th>
+                    <th>Mã vạch</th>
                     <th>Tên hàng</th>
+                    <th>Thương hiệu</th>
+                    <th>Màu</th>
+                    <th>Size</th>
                     <th>Giá vốn</th>
                     <th>Giá bán</th>
                     <th>Tồn kho</th>
+                    <th>Đơn vị</th>
                     <th>Ảnh</th> 
                 </tr>
             </thead>
@@ -38,10 +43,15 @@
                 {% for product in products %}
                 <tr data-id="{{ product.id_product }}">
                     <td>{{ product.plu }}</td>
+                    <td>{{ product.barcode }}</td>
                     <td>{{ product.nameproduct }}</td>
+                    <td>{{ product.brand }}</td>
+                    <td>{{ product.color }}</td>
+                    <td>{{ product.size }}</td>                    
                     <td>{{ product.costcapital }}</td>
                     <td>{{ product.price }}</td>
                     <td>{{ product.inventory }}</td>
+                    <td>{{ product.unit }}</td>
                     <td>
                         {% if product.path_image %}
                         <img src="{{ product.path_image }}" alt="Product Image" class="product-img">
@@ -84,7 +94,14 @@
                     </div>
                     <div class="form-group">
                         <label for="update_groupproduct">Nhóm hàng:</label>
-                        <input type="text" id="update_groupproduct" name="groupproduct">
+                        <select id="update_groupproduct" name="groupproduct" required>
+                            <option value="aocontrai">Áo con trai</option>
+                            <option value="aocongai">Áo con gái</option>
+                            <option value="quancontrai">Quần con trai</option>
+                            <option value="quancongai">Quần con gái</option>
+                            <option value="vay">Váy</option>
+                            <option value="khac">Khác</option>
+                        </select>
                     </div>
                 </div>
                 <div class="form-group-row">
@@ -105,6 +122,21 @@
                     <div class="form-group">
                         <label for="update_inventory">Tồn kho:</label>
                         <input type="text" id="update_inventory" name="inventory">
+                    </div>
+                </div>
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="update_color">Màu:</label>
+                        <input type="text" id="update_color" name="color">
+                    </div>
+                    <div class="form-group">
+                        <label for="update_size">Size:</label>
+                        <select id="update_size" name="size" required>
+                            <option value="m">M</option>
+                            <option value="l">L</option>
+                            <option value="xl">XL</option>
+                            <option value="xxl">XXL</option>
+                        </select>
                     </div>
                 </div>
                 <div class="form-group-row">
@@ -144,7 +176,14 @@
                     </div>
                     <div class="form-group">
                         <label for="groupproduct">Nhóm hàng:</label>
-                        <input type="text" id="groupproduct" name="groupproduct">
+                        <select id="groupproduct" name="groupproduct" required>
+                            <option value="aocontrai">Áo con trai</option>
+                            <option value="aocongai">Áo con gái</option>
+                            <option value="quancontrai">Quần con trai</option>
+                            <option value="quancongai">Quần con gái</option>
+                            <option value="vay">Váy</option>
+                            <option value="khac">Khác</option>
+                        </select>
                     </div>
                 </div>
                 <div class="form-group-row">
@@ -165,6 +204,21 @@
                     <div class="form-group">
                         <label for="inventory">Tồn kho:</label>
                         <input type="text" id="inventory" name="inventory">
+                    </div>
+                </div>
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="color">Màu:</label>
+                        <input type="text" id="color" name="color">
+                    </div>
+                    <div class="form-group">
+                        <label for="size">Size:</label>
+                        <select id="size" name="size" required>
+                            <option value="m">M</option>
+                            <option value="l">L</option>
+                            <option value="xl">XL</option>
+                            <option value="xxl">XXL</option>
+                        </select>
                     </div>
                 </div>
                 <div class="form-group-row">

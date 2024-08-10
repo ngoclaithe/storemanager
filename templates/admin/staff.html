@@ -187,10 +187,18 @@
                 <option value="">Chọn</option>
                 <option value="/list_staff">Xem danh sách nhân viên</option>
                 <option value="/time_keeping">Chấm công</option>
+                <option value="/salary_staff">Lương nhân viên</option>
             </select>
             <select id="staffSelect" class="form-control short" style="display: none;">
                 <option value="">Chọn nhân viên</option>
             </select>
+            <div id="dayfromdayto" class="form-control short" style="display: none;" >
+                <label for="from_day">Từ ngày:</label>
+                <input type="date" id="from_day" name="birthday">
+                <label for="birthday">Đến ngày:</label>
+                <input type="date" id="birthday" name="birthday">
+            </div>
+            
         </div>
         <div id="staff-table" class="table-responsive mt-3">
             <table class="table table-bordered table-hover">
@@ -297,6 +305,7 @@
             var staffTable = document.getElementById('staff-table');
             var calendar = document.getElementById('calendar');
             var addStaffBtn = document.getElementById('add-staff-btn');
+            var dayfromdayto = document.getElementById('dayfromdayto');
             if (selectedEndpoint === '/list_staff') {
                 fetch(selectedEndpoint)
                     .then(response => response.json())
@@ -336,6 +345,19 @@
                         staffTable.style.display = 'none';
                         calendar.style.display = 'none';
                         addStaffBtn.style.display = 'none';
+                    })
+                    .catch(error => console.error('Error:', error));
+            } else if (selectedEndpoint === '/salary_staff') {
+                fetch('/salary_staff')
+                    .then(response => response.json())
+                    .then(data => {
+
+                        staffTable.style.display = 'none';
+                        addStaffBtn.style.display = 'flex';
+                        staffSelect.style.display = 'none';
+                        calendar.style.display = 'none';
+                        dayfromdayto.style.display = 'block';
+
                     })
                     .catch(error => console.error('Error:', error));
             }

@@ -2,14 +2,15 @@ function updateProduct(idProduct) {
     const row = document.querySelector(`tr[data-id="${idProduct}"]`);
     document.getElementById('update_id_product').value = idProduct;
     document.getElementById('update_plu').value = row.children[0].innerText;
-    // document.getElementById('update_barcode').value = row.children[1].innerText;
-    document.getElementById('update_nameproduct').value = row.children[1].innerText;
-    // document.getElementById('update_groupproduct').value = row.children[3].innerText;
-    // document.getElementById('update_brand').value = row.children[4].innerText;
-    document.getElementById('update_costcapital').value = row.children[2].innerText;
-    document.getElementById('update_price').value = row.children[3].innerText;
-    document.getElementById('update_inventory').value = row.children[4].innerText;
-    // document.getElementById('update_unit').value = row.children[8].innerText;
+    document.getElementById('update_barcode').value = row.children[1].innerText;
+    document.getElementById('update_nameproduct').value = row.children[2].innerText;
+    document.getElementById('update_brand').value = row.children[3].innerText;
+    document.getElementById('update_color').value = row.children[4].innerText;
+    document.getElementById('update_size').value = row.children[5].innerText;
+    document.getElementById('update_costcapital').value = row.children[6].innerText;
+    document.getElementById('update_price').value = row.children[7].innerText;
+    document.getElementById('update_inventory').value = row.children[8].innerText;
+    document.getElementById('update_unit').value = row.children[9].innerText;
     // document.getElementById('update_path_image').value = row.children[9].innerText;
 
     document.getElementById('updateModal').style.display = 'block';

@@ -26,6 +26,9 @@ class Product(db.Model):
     price = db.Column(db.Integer, nullable=False)
     inventory = db.Column(db.Integer, nullable=False)
     unit = db.Column(db.String(50), nullable=False)
+    size = db.Column(db.String(50), nullable=True)
+    color = db.Column(db.String(50), nullable=True)
+    
     path_image = db.Column(db.String(255), nullable=True)
 
 class Bill(db.Model):
