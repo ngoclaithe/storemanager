@@ -41,8 +41,10 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///quanlypbanhang.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 db.init_app(app)
-with app.app_context():
-    db.create_all()
+db_path = "quanlypbanhang.db"
+if not os.path.exists(db_path):
+    with app.app_context():
+        db.create_all()
 
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
