@@ -37,14 +37,19 @@ app.secret_key = os.urandom(24)
 UPLOAD_FOLDER = "static\images"
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
 # Configure SQLite database
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///quanlypbanhang.db"
+db_path = "quanlypbanhang.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{os.path.abspath(db_path)}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 db.init_app(app)
-db_path = "quanlypbanhang.db"
+print(os.path.abspath(app.config["SQLALCHEMY_DATABASE_URI"].replace("sqlite:///", "")))
+
 if not os.path.exists(db_path):
+    print("Database not found. Creating new database.")
     with app.app_context():
         db.create_all()
+else:
+    print("Database already exists.")
 
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -65,6 +70,8 @@ def login():
         email = request.form["email"]
         password = md5_hash(request.form["password"])
         user = Register.query.filter_by(email=email, password=password).first()
+        print(email)
+        print(user.email)
 
         if user:
             session["user_id"] = user.id
@@ -1140,7 +1147,10 @@ def salary_staff_calcu():
     print(results)
     return jsonify(results)
 
-
+@app.route("/check_db")
+def check_db():
+    users = Register.query.all()
+    return jsonify([user.email for user in users])
 application = app
 
 
