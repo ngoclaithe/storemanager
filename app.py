@@ -396,12 +396,19 @@ def admin_transaction():
     else:
         return redirect(url_for("login"))
 
+@app.route("/add_bill_import", methods=["POST"])
+def add_bill_import():
+    if request.method == "POST":
+        data = request.json
+        items = data.get("items")
+        supplier = data.get("supplier")
 
+        new_
+        pass
 @app.route("/add_bill", methods=["POST"])
 def add_bill():
     if request.method == "POST":
         data = request.json
-        print(data)
         items = data.get("items")
         if not items:
             return "Missing items", 400
@@ -416,6 +423,26 @@ def add_bill():
         name_customer = data.get("name_customer")
         phone_customer = data.get("phone_customer")
 
+        product = Product.query.filter_by(id_product=id_product).first()
+        if product is None:
+            return "Product not found", 404
+
+        if quantity > product.inventory:
+            return "Failed to add bill: Quantity exceeds available inventory", 400
+
+        product.inventory -= quantity
+        db.session.add(product)
+
+        customer = Customer.query.filter_by(phone_customer=phone_customer).first()
+
+        if customer is None:
+            new_customer = Customer(
+                name_customer=name_customer,
+                phone_customer=phone_customer,
+                type_customer=type_customer,
+            )
+            db.session.add(new_customer)
+
         new_bill = Bill(
             id_product=id_product,
             quantity=quantity,
@@ -427,15 +454,7 @@ def add_bill():
             phone_customer=phone_customer,
         )
 
-        new_customer = Customer(
-            name_customer=name_customer,
-            phone_customer=phone_customer,
-            type_customer=type_customer,
-        )
-
         db.session.add(new_bill)
-        db.session.commit()
-        db.session.add(new_customer)
         db.session.commit()
 
         return "Bill added successfully", 200
@@ -561,17 +580,26 @@ def admin_report():
         return redirect(url_for("login"))
 
 
-@app.route("/add_bill_page")
-def add_bill_page():
+@app.route("/add_bill_import_page")
+def add_bill_import_page():
     if "user_id" in session and session["usertype"] == "admin":
         user = Register.query.filter_by(id=session["user_id"]).first()
         if user:
-            return render_template("admin/add_bill.html", user_name=user.user)
+            return render_template("admin/add_bill_import.html", user_name=user.user)
         else:
             return "Không tìm thấy thông tin người dùng"
     else:
         return redirect(url_for("login"))
-
+@app.route("/add_bill_export_page")
+def add_bill_export_page():
+    if "user_id" in session and session["usertype"] == "admin":
+        user = Register.query.filter_by(id=session["user_id"]).first()
+        if user:
+            return render_template("admin/add_bill_export.html", user_name=user.user)
+        else:
+            return "Không tìm thấy thông tin người dùng"
+    else:
+        return redirect(url_for("login"))
 
 @app.route("/add_product", methods=["POST"])
 def add_product():
@@ -667,13 +695,21 @@ def delete_product(idProduct):
 @app.route("/search_product")
 def search_product():
     query = request.args.get("q")
-    products = Product.query.filter(Product.nameproduct.like(f"%{query}%")).all()
+    products = Product.query.filter(Product.plu.like(f"%{query}%")).all()
     product_list = [
-        {"id": p.id_product, "name": p.nameproduct, "price": p.price, "unit": p.unit}
+        {"id": p.id_product, "plu": p.plu,"name": p.nameproduct, "price": p.price, "inventory": p.inventory, "size": p.size, "color": p.color, "unit": p.unit}
         for p in products
     ]
     return jsonify(product_list)
-
+@app.route("/search_customer")
+def search_customer():
+    query = request.args.get("q")
+    customers = Customer.query.filter(Customer.phone_customer.like(f"%{query}%")).all()
+    customer_list = [
+        {"name_customer": c.name_customer, "phone_customer": c.phone_customer}
+        for c in customers
+    ]
+    return jsonify(customer_list)
 
 @app.route("/sales_today")
 def sales_today():
@@ -1050,8 +1086,58 @@ def checkout(staff_id):
     db.session.commit()
 
     return jsonify({"message": "Check-out thành công"}), 200
-@app.route("/salary_staff", methods=["POST"])
-def salary_staff():
+@app.route('/salary_staff_calcu', methods=['GET'])
+def salary_staff_calcu():
+    dayfrom = request.args.get('dayfrom')
+    dayto = request.args.get('dayto')
+
+    dayfrom_date = datetime.strptime(dayfrom, '%Y-%m-%d').date()
+    dayto_date = datetime.strptime(dayto, '%Y-%m-%d').date()
+
+    timekeeping_records = Timekeeping.query.filter(Timekeeping.day >= dayfrom_date,
+                                                   Timekeeping.day <= dayto_date).all()
+
+    all_staff = Staff.query.all()
+
+    results = []
+
+    for staff in all_staff:
+        staff_result = {"name_staff": staff.name_staff}
+        total_shifts = 0
+        current_date = dayfrom_date
+        
+        while current_date <= dayto_date:
+            record = next((r for r in timekeeping_records if r.day == current_date and r.id_staff == staff.id_staff), None)
+            
+            if record and record.checkin and record.checkout:
+                checkin_time = datetime.combine(record.day, record.checkin)
+                checkout_time = datetime.combine(record.day, record.checkout)
+                duration = checkout_time - checkin_time
+                hours_worked = duration.total_seconds() / 3600.0
+
+                if hours_worked < 3.5:
+                    shifts = 0
+                elif 3.5 <= hours_worked < 7.5:
+                    shifts = 1
+                elif 7.5 <= hours_worked < 11.5:
+                    shifts = 2
+                elif 11.5 <= hours_worked < 15.5:
+                    shifts = 3
+                else:
+                    shifts = 4
+            else:
+                shifts = 0
+
+            staff_result[current_date.strftime('%Y-%m-%d')] = shifts
+            total_shifts += shifts
+            current_date += timedelta(days=1)
+        
+        staff_result["total_shifts"] = total_shifts
+        results.append(staff_result)
+    
+    print(results)
+    return jsonify(results)
+
 
 application = app
 

@@ -92,10 +92,10 @@
     </div>
 
     <div class="content">
-        <h1>Hóa Đơn</h1>
+        <h1>Quản lý giao dịch</h1>
         <p id="realtime-data"></p>
-        <button id="addBill" class="btn btn-primary mb-3" onclick="openNewTab()">+ Tạo hóa đơn</button>
-        
+        <button id="addBillExport" class="btn btn-primary mb-3" onclick="openNewTabExport()">Bán Hàng</button>
+        <button id="addBillImport" class="btn btn-primary mb-3" onclick="openNewTabImport()">Nhập Hàng</button>        
         <table>
             <thead>
                 <tr>
@@ -130,10 +130,12 @@
     </div>
     
     <script>
-        function openNewTab() {
-            window.open('/add_bill_page', '_blank');
+        function openNewTabExport() {
+            window.open('/add_bill_export_page', '_blank');
         }
-        
+        function openNewTabImport() {
+            window.open('/add_bill_import_page', '_blank');
+        }        
         function deleteBill(billId) {
             fetch('/delete_bill', {
                 method: 'DELETE',

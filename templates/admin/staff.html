@@ -186,19 +186,21 @@
             <select id="reportSelect" class="form-control short">
                 <option value="">Chọn</option>
                 <option value="/list_staff">Xem danh sách nhân viên</option>
-                <option value="/time_keeping">Chấm công</option>
-                <option value="/salary_staff">Lương nhân viên</option>
+                <option value="/time_keeping">Nhân viên đã chấm công</option>
+                <option value="/salary_staff">Thống kê ca làm việc</option>
             </select>
             <select id="staffSelect" class="form-control short" style="display: none;">
                 <option value="">Chọn nhân viên</option>
             </select>
-            <div id="dayfromdayto" class="form-control short" style="display: none;" >
+            <div id="dayfromdayto" class="form-control short" style="display: none;">
                 <label for="from_day">Từ ngày:</label>
-                <input type="date" id="from_day" name="birthday">
-                <label for="birthday">Đến ngày:</label>
-                <input type="date" id="birthday" name="birthday">
+                <input type="date" id="from_day" name="from_day">
+                <label for="to_day">Đến ngày:</label>
+                <input type="date" id="to_day" name="to_day">
+                <button id="searchButton">Tra cứu</button>
+                <button id="exportTable">Tải về</button>
             </div>
-            
+
         </div>
         <div id="staff-table" class="table-responsive mt-3">
             <table class="table table-bordered table-hover">
@@ -237,6 +239,27 @@
                 </tbody>
             </table>
         </div>
+        <div id="salary-table" class="table-responsive mt-3" style="display: none;">
+            <table class="table table-bordered table-hover">
+                <thead class="thead-dark" id="salaryTableHead">
+                    <tr>
+                        <th>Tên</th>
+                        <!-- Các ngày sẽ được chèn động vào đây -->
+                    </tr>
+                </thead>
+                <tbody id="salaryTableBody">
+                    <!-- Dữ liệu ca làm sẽ được chèn động vào đây -->
+                </tbody>
+                <!-- <tfoot>
+                    <tr>
+                        <th>Tổng</th>
+
+                        <th id="totalShifts" colspan="2">0</th>
+                    </tr>
+                </tfoot> -->
+            </table>
+        </div>
+
 
         <div id="add-staff-btn" data-toggle="modal" data-target="#addStaffModal">+</div>
     </div>
@@ -303,6 +326,7 @@
             var selectedEndpoint = this.value;
             var staffSelect = document.getElementById('staffSelect');
             var staffTable = document.getElementById('staff-table');
+            var salaryTable = document.getElementById('salary-table');
             var calendar = document.getElementById('calendar');
             var addStaffBtn = document.getElementById('add-staff-btn');
             var dayfromdayto = document.getElementById('dayfromdayto');
@@ -327,7 +351,9 @@
                         staffTable.style.display = 'block';
                         addStaffBtn.style.display = 'flex';
                         staffSelect.style.display = 'none';
+                        salaryTable.style.display = 'none';
                         calendar.style.display = 'none';
+                        dayfromdayto.style.display = 'none';
                     })
                     .catch(error => console.error('Error:', error));
             } else if (selectedEndpoint === '/time_keeping') {
@@ -344,22 +370,108 @@
                         staffSelect.style.display = 'inline-block';
                         staffTable.style.display = 'none';
                         calendar.style.display = 'none';
+                        salaryTable.style.display = 'none';
                         addStaffBtn.style.display = 'none';
+                        dayfromdayto.style.display = 'none';
                     })
                     .catch(error => console.error('Error:', error));
             } else if (selectedEndpoint === '/salary_staff') {
-                fetch('/salary_staff')
-                    .then(response => response.json())
-                    .then(data => {
+                staffTable.style.display = 'none';
+                addStaffBtn.style.display = 'none';
+                staffSelect.style.display = 'none';
+                calendar.style.display = 'none';
+                dayfromdayto.style.display = 'block';
+                document.getElementById('searchButton').addEventListener('click', function () {
+                    var from_day = document.getElementById('from_day').value;
+                    var to_day = document.getElementById('to_day').value;
 
-                        staffTable.style.display = 'none';
-                        addStaffBtn.style.display = 'flex';
-                        staffSelect.style.display = 'none';
-                        calendar.style.display = 'none';
-                        dayfromdayto.style.display = 'block';
+                    if (!from_day || !to_day) {
+                        alert('Vui lòng chọn cả hai ngày.');
+                        return;
+                    }
 
-                    })
-                    .catch(error => console.error('Error:', error));
+                    var fromDate = new Date(from_day);
+                    var toDate = new Date(to_day);
+                    var timeDiff = Math.abs(toDate.getTime() - fromDate.getTime());
+                    var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+                    if (diffDays > 30) {
+                        alert('Phạm vi ngày không được quá 30 ngày. Vui lòng chọn lại.');
+                        return;
+                    }
+
+                    fetch(`/salary_staff_calcu?dayfrom=${from_day}&dayto=${to_day}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(data);
+                            var salaryTableHead = document.getElementById('salaryTableHead');
+                            var salaryTableBody = document.getElementById('salaryTableBody');
+                            // var totalShifts = document.getElementById('totalShifts');
+
+                            salaryTableHead.innerHTML = '<tr><th>Tên</th></tr>';
+                            salaryTableBody.innerHTML = '';
+                            // totalShifts.innerHTML = '';
+                            var dateList = Object.keys(data[0]).filter(key => key !== 'name_staff' && key !== 'total_shifts');
+                            dateList.forEach(date => {
+                                var th = document.createElement('th');
+                                th.textContent = date;
+                                salaryTableHead.querySelector('tr').appendChild(th);
+                            });
+                            var totalTh = document.createElement('th');
+                            totalTh.textContent = 'Tổng ca làm';
+                            salaryTableHead.querySelector('tr').appendChild(totalTh);
+
+                            data.forEach(staff => {
+                                var row = document.createElement('tr');
+                                row.innerHTML = `<td>${staff.name_staff}</td>`;
+
+                                var totalShift = 0;
+
+                                dateList.forEach(date => {
+                                    var td = document.createElement('td');
+                                    td.textContent = staff[date] || 0;
+                                    totalShift += staff[date] || 0;
+                                    row.appendChild(td);
+                                });
+
+                                var totalTd = document.createElement('td');
+                                totalTd.textContent = totalShift;
+                                row.appendChild(totalTd);
+
+                                salaryTableBody.appendChild(row);
+                            });
+                            salaryTable.style.display = 'block';
+                        })
+                        .catch(error => console.error('Error:', error));
+                });
+                document.getElementById('exportTable').addEventListener('click', function () {
+                    var table = document.querySelector('#salary-table table');
+                    var rows = table.querySelectorAll('tr');
+                    var csvContent = '';
+
+                    rows.forEach(function (row) {
+                        var cells = row.querySelectorAll('th, td');
+                        var rowArray = [];
+                        cells.forEach(function (cell) {
+                            rowArray.push('"' + cell.textContent.replace(/"/g, '""') + '"');
+                        });
+                        csvContent += rowArray.join(',') + '\n';
+                    });
+
+                    var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                    var link = document.createElement('a');
+                    if (link.download !== undefined) { // feature detection
+                        var url = URL.createObjectURL(blob);
+                        link.setAttribute('href', url);
+                        link.setAttribute('download', 'salary_table.csv');
+                        link.style.visibility = 'hidden';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+                });
+
+
             }
         });
 
@@ -370,6 +482,7 @@
                 fetch('/get_timekeeping/' + selectedStaffId)
                     .then(response => response.json())
                     .then(data => {
+
                         var calendarBody = document.getElementById('calendarBody');
                         calendarBody.innerHTML = '';
 
