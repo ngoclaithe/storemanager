@@ -121,6 +121,28 @@
         .customer-list li:hover {
             background-color: #f0f0f0;
         }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            .right-panel,
+            .right-panel * {
+                visibility: visible;
+            }
+
+            .right-panel {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: auto;
+            }
+            #checkout {
+            display: none;
+            }
+        }
     </style>
 </head>
 
@@ -203,7 +225,7 @@
                 <input type="text" id="changeAmount" class="form-control" readonly>
             </div>
             <button class="btn btn-success" id="checkout">Thanh toán</button>
-            <button class="btn btn-secondary" id="printReceipt">In hóa đơn</button>
+            <!-- <button class="btn btn-secondary" id="printReceipt">In hóa đơn</button> -->
         </div>
     </div>
 
@@ -212,11 +234,7 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
-        const { jsPDF } = window.jspdf;
 
-        window.onload = function () {
-            jsPDF.API.addFont('Roboto-Regular.ttf', 'Roboto', 'normal');
-        };
 
         var selectedProduct = null;
         var billItems = [];
@@ -283,23 +301,6 @@
             $('#customerList').empty();
             $('#searchProduct').val('');
             $('#phone_customer').val('');
-        }
-
-        function printReceipt() {
-            const doc = new jsPDF();
-            const totalAmount = $('#totalAmount').text();
-            const amountPaid = $('#amountPaid').val();
-            const changeAmount = $('#changeAmount').val();
-
-            doc.setFont('Roboto');
-            doc.setFontSize(16);
-            doc.text('HÓA ĐƠN', 10, 10);
-            doc.setFontSize(12);
-            doc.text(`Tổng tiền: ${totalAmount}`, 10, 30);
-            doc.text(`Khách hàng trả: ${amountPaid}`, 10, 40);
-            doc.text(`Tiền thừa: ${changeAmount}`, 10, 50);
-
-            doc.save('invoice.pdf');
         }
 
         $(document).ready(function () {
@@ -379,6 +380,7 @@
                     data: JSON.stringify(billData),
                     success: function (response) {
                         alert('Hóa đơn đã được lưu thành công!');
+                        window.print();
                         window.location.href = '/transaction';
                     },
                     error: function (xhr, status, error) {
@@ -387,8 +389,6 @@
                     }
                 });
             });
-
-            $('#printReceipt').on('click', printReceipt);
         });
 
     </script>
