@@ -37,6 +37,7 @@ class Bill(db.Model):
     id_bill = db.Column(db.Integer, primary_key=True)
     quantity = db.Column(db.Integer, nullable=False)
     date = db.Column(db.DateTime, default=lambda: datetime.utcnow().replace(microsecond=0), nullable=False)
+    type_transaction = db.Column(db.String(255), nullable=True)
     type_customer = db.Column(db.String(255), nullable=True)
     totalprice = db.Column(db.Integer, nullable=True)
     discount = db.Column(db.Integer, nullable=True)
@@ -44,6 +45,8 @@ class Bill(db.Model):
     customerpaid = db.Column(db.Integer, nullable=True)
     id_product = db.Column(db.Integer, nullable=False)
     phone_customer = db.Column(db.Integer, nullable=True)
+    type_supplier = db.Column(db.String(255), nullable=True)
+    phone_supplier = db.Column(db.Integer, nullable=True)
 
 class Treasury(db.Model):
     __tablename__ = 'treasury'
@@ -85,3 +88,14 @@ class Timekeeping(db.Model):
     checkout = db.Column(db.Time, nullable=True)
 
     staff = db.relationship('Staff', backref=db.backref('timekeeping_records', lazy=True))
+
+class Supplier(db.Model):
+    __tablename__ = 'supplier'
+    
+    id_supplier = db.Column(db.Integer, primary_key=True)
+    name_supplier = db.Column(db.String(255), nullable=True)
+    phone_supplier = db.Column(db.Integer, nullable=True)
+    type_supplier = db.Column(db.String(255), nullable=True)
+    email_supplier = db.Column(db.String(255), nullable=True)
+    tax_code = db.Column(db.String(255), nullable=True)
+    place_supplier = db.Column(db.String(255), nullable=True)

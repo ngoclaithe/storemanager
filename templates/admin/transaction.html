@@ -100,8 +100,11 @@
             <thead>
                 <tr>
                     <th>Mã hóa đơn</th>
+                    <th>Loại giao dịch</th>                    
                     <th>Thời gian</th>
                     <th>Loại khách hàng</th>
+                    <th>Loại nhà cung cấp</th>
+                    <th>Số lượng</th>
                     <th>Tổng tiền hàng</th>
                     <th>Giảm giá(%)</th>
                     <th>Tổng sau giảm giá</th>
@@ -113,13 +116,16 @@
             <tbody>
                 {% for bill in bills %}
                 <tr>
-                    <td>{{ bill.code_bill }}</td>
-                    <td>{{ bill.date }}</td>
-                    <td>{{ bill.type_customer }}</td>
-                    <td>{{ bill.totalprice }}</td>
-                    <td>{{ bill.discount }}</td>
-                    <td>{{ bill.afterdiscount }}</td>
-                    <td>{{ bill.customerpaid }}</td>
+                    <td>{{ bill.code_bill or '' }}</td>
+                    <td>{{ bill.type_transaction or '' }}</td>
+                    <td>{{ bill.date or '' }}</td>
+                    <td>{{ bill.type_customer or '' }}</td>
+                    <td>{{ bill.type_supplier or '' }}</td>
+                    <td>{{ bill.quantity or '' }}</td>
+                    <td>{{ bill.totalprice or '' }}</td>
+                    <td>{{ bill.discount or '' }}</td>
+                    <td>{{ bill.afterdiscount or '' }}</td>
+                    <td>{{ bill.customerpaid or '' }}</td>
                     <td class="action-buttons">
                         <button onclick="deleteBill('{{ bill.id_bill }}')">Xóa</button>
                     </td>
@@ -128,6 +134,7 @@
             </tbody>
         </table>
     </div>
+    
     
     <script>
         function openNewTabExport() {

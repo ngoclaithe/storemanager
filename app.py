@@ -9,7 +9,7 @@ from flask import (
     jsonify,
     send_file,
 )
-from db import db, Register, Product, Bill, Treasury, Staff, Customer, Timekeeping
+from db import db, Register, Product, Bill, Treasury, Staff, Customer, Timekeeping, Supplier
 from datetime import datetime, timedelta, date
 import hashlib
 import csv
@@ -42,7 +42,8 @@ app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{os.path.abspath(db_path)}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 db.init_app(app)
-print(os.path.abspath(app.config["SQLALCHEMY_DATABASE_URI"].replace("sqlite:///", "")))
+
+# print(os.path.abspath(app.config["SQLALCHEMY_DATABASE_URI"].replace("sqlite:///", "")))
 
 if not os.path.exists(db_path):
     print("Database not found. Creating new database.")
@@ -362,6 +363,7 @@ def get_bills():
     try:
         bills = Bill.query.with_entities(
             Bill.id_bill,
+            Bill.type_transaction,
             Bill.date,
             Bill.type_customer,
             Bill.totalprice,
@@ -369,6 +371,9 @@ def get_bills():
             Bill.afterdiscount,
             Bill.customerpaid,
             Bill.id_product,
+            Bill.type_supplier,
+            Bill.phone_supplier,
+            Bill.quantity
         ).all()
     except ProgrammingError:
         bills = []
@@ -377,6 +382,7 @@ def get_bills():
     for bill in bills:
         bill_data = {
             "id_bill": bill.id_bill,
+            "type_transaction": bill.type_transaction,
             "code_bill": "HD{:04d}".format(bill.id_bill),
             "date": bill.date,
             "type_customer": bill.type_customer,
@@ -385,6 +391,9 @@ def get_bills():
             "afterdiscount": bill.afterdiscount,
             "customerpaid": bill.customerpaid,
             "id_product": bill.id_product,
+            "type_supplier": bill.type_supplier,
+            "phone_supplier": bill.phone_supplier,
+            "quantity": bill.quantity
         }
         bill_list.append(bill_data)
 
@@ -409,11 +418,45 @@ def admin_transaction():
 def add_bill_import():
     if request.method == "POST":
         data = request.json
+        print(data)
         items = data.get("items")
-        supplier = data.get("supplier")
 
-        new_
-        pass
+        id_product = items[0].get("productId")
+        quantity = items[0].get("quantity")
+        type_supplier = items[0].get("typeSupplier")
+        customerpaid = data.get("customerpaid")
+        phone_supplier = data.get("phone_supplier")
+        name_supplier = data.get("name_supplier")
+        totalprice = data.get("totalprice")
+        tax_code = data.get("tax_code")
+        place_supplier = data.get("place_supplier")
+        product = Product.query.filter_by(id_product=id_product).first()
+        
+        product.inventory += quantity
+        db.session.add(product)
+        supplier = Supplier.query.filter_by(phone_supplier=phone_supplier).first()
+        if supplier is None:
+            new_supplier = Supplier(
+                name_supplier=name_supplier,
+                phone_supplier=phone_supplier,
+                type_supplier=type_supplier,
+                tax_code=tax_code,
+                place_supplier=place_supplier
+            )
+            db.session.add(new_supplier)
+        new_bill = Bill(
+            id_product=id_product,
+            quantity=quantity,
+            type_supplier=type_supplier,
+            totalprice=totalprice,
+            phone_supplier=phone_supplier,
+            type_transaction = "Nhập Hàng"
+        )
+
+        db.session.add(new_bill)
+        db.session.commit()
+
+        return "Bill added successfully", 200
 @app.route("/add_bill", methods=["POST"])
 def add_bill():
     if request.method == "POST":
@@ -461,6 +504,7 @@ def add_bill():
             afterdiscount=afterdiscount,
             customerpaid=customerpaid,
             phone_customer=phone_customer,
+            type_transaction = "Bán Hàng"
         )
 
         db.session.add(new_bill)
@@ -719,7 +763,16 @@ def search_customer():
         for c in customers
     ]
     return jsonify(customer_list)
-
+@app.route("/search_supplier")
+def search_supplier():
+    query = request.args.get("q")
+    suppliers = Supplier.query.filter(Supplier.phone_supplier.like(f"%{query}%")).all()
+    supplier_list = [
+        {"name_supplier": s.name_supplier, "phone_supplier": s.phone_supplier, "place_supplier": s.place_supplier, "tax_code": s.tax_code}
+        for s in suppliers
+    ]
+    print(supplier_list)
+    return jsonify(supplier_list)
 @app.route("/sales_today")
 def sales_today():
     today = date.today()
@@ -728,23 +781,27 @@ def sales_today():
     sales_today = (
         db.session.query(func.sum(Bill.quantity))
         .filter(func.date(Bill.date) == today)
+        .filter(Bill.type_transaction == "Bán Hàng")
         .scalar()
     )
     revenue_today = (
         db.session.query(func.sum(Bill.totalprice))
         .filter(func.date(Bill.date) == today)
+        .filter(Bill.type_transaction == "Bán Hàng")
         .scalar()
     )
 
     sold_product = (
         db.session.query(func.count(func.distinct(Bill.id_product)))
         .filter(func.date(Bill.date) == today)
+        .filter(Bill.type_transaction == "Bán Hàng")
         .scalar()
     )
 
     revenue_yesterday = (
         db.session.query(func.sum(Bill.totalprice))
         .filter(func.date(Bill.date) == yesterday)
+        .filter(Bill.type_transaction == "Bán Hàng")
         .scalar()
     )
 
@@ -760,6 +817,7 @@ def sales_today():
             func.sum(Bill.quantity).label("quantity"),
         )
         .filter(func.date(Bill.date) == today)
+        .filter(Bill.type_transaction == "Bán Hàng")
         .group_by("hour")
         .all()
     )
@@ -777,6 +835,7 @@ def sales_today():
             "sales_over_time": sales_over_time,
         }
     )
+
 
 
 @app.route("/add_treasury", methods=["POST"])
@@ -966,7 +1025,7 @@ def report_product():
                 db.func.sum(Bill.quantity * Product.price).label("revenue"),
             )
             .join(Bill, Product.id_product == Bill.id_product)
-            .filter(db.func.date(Bill.date) == today)
+            .filter(db.func.date(Bill.date) == today, Bill.type_transaction == "Bán Hàng")
             .group_by(
                 Product.id_product,
                 Product.nameproduct,
@@ -989,6 +1048,7 @@ def report_product():
             report_list.append(report_data)
 
         return jsonify(report_list)
+
 
 
 @app.route("/report_customer", methods=["POST"])
@@ -1146,6 +1206,7 @@ def salary_staff_calcu():
     
     print(results)
     return jsonify(results)
+
 
 @app.route("/check_db")
 def check_db():
