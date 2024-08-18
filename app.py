@@ -1076,8 +1076,42 @@ def report_product():
             report_list.append(report_data)
 
         return jsonify(report_list)
+@app.route("/report_import", methods=["POST"])
+def report_import():
+    if request.method == "POST":
+        today = datetime.utcnow().date()
 
+        reports = (
+            db.session.query(
+                Supplier.name_supplier,
+                Supplier.phone_supplier,
+                Supplier.type_supplier,
+                func.count(Bill.id_product).label("items_purchased"),
+                func.sum(Bill.quantity).label("total_quantity"),
+                func.sum(Bill.totalprice).label("total_amount"),
+            )
+            .join(Supplier, Bill.phone_supplier == Supplier.phone_supplier)
+            .filter(func.date(Bill.date) == today)
+            .filter(Bill.type_transaction == "Nhập Hàng")
+            .group_by(
+                Supplier.name_supplier, Supplier.phone_supplier, Supplier.type_supplier
+            )
+            .all()
+        )
 
+        report_list = []
+        for report in reports:
+            report_data = {
+                "name_supplier": report.name_supplier,
+                "phone_supplier": report.phone_supplier,
+                "type_supplier": report.type_supplier,
+                "items_purchased": report.items_purchased,
+                "total_quantity": report.total_quantity,
+                "total_amount": report.total_amount,
+            }
+            report_list.append(report_data)
+
+        return jsonify(report_list)
 
 @app.route("/report_customer", methods=["POST"])
 def report_customer():
@@ -1090,6 +1124,7 @@ def report_customer():
                 Customer.phone_customer,
                 Customer.type_customer,
                 func.count(Bill.id_product).label("items_purchased"),
+                func.sum(Bill.quantity).label("total_quantity"),
                 func.sum(Bill.customerpaid).label("total_paid"),
             )
             .join(Bill, Customer.phone_customer == Bill.phone_customer)
@@ -1107,6 +1142,7 @@ def report_customer():
                 "phone_customer": report.phone_customer,
                 "type_customer": report.type_customer,
                 "items_purchased": report.items_purchased,
+                "total_quantity": report.total_quantity,
                 "total_paid": report.total_paid,
             }
             report_list.append(report_data)

@@ -48,7 +48,7 @@
                 <h1>Báo cáo cuối ngày</h1>
                 <select id="reportSelect" class="form-control">
                     <option value="">Chọn báo cáo</option>
-                    <!-- <option value="/report_import">Báo cáo nhập hàng</option> -->
+                    <option value="/report_import">Báo cáo nhập hàng</option>
                     <option value="/report_product">Báo cáo bán hàng</option>
                     <option value="/report_customer">Báo cáo khách hàng</option>
                 </select>
@@ -122,6 +122,7 @@
                                     <th class="text-center">Số điện thoại</th>
                                     <th class="text-center">Loại khách hàng</th>
                                     <th class="text-center">Số mặt hàng mua</th>
+                                    <th class="text-center">Số lượng sản phẩm đã mua</th>
                                     <th class="text-center">Tổng số tiền đã trả</th>
                                 </tr>
                             `;
@@ -132,11 +133,36 @@
                                         <td class="text-center">${item.phone_customer}</td>
                                         <td class="text-center">${item.type_customer}</td>
                                         <td class="text-center">${item.items_purchased}</td>
+                                        <td class="text-center">${item.total_quantity}</td>
                                         <td class="text-center">${item.total_paid.toLocaleString()}</td>
                                     </tr>
                                 `;
                             });
+                        }else if (selectedEndpoint === '/report_import') {
+                            reportHeader = `
+                                <tr>
+                                    <th class="text-center">Tên nhà cung cấp</th>
+                                    <th class="text-center">Số điện thoại</th>
+                                    <th class="text-center">Loại nhà cung cấp</th>
+                                    <th class="text-center">Số mặt hàng nhập</th>
+                                    <th class="text-center">Số lượng sản phẩm đã nhập</th>
+                                    <th class="text-center">Tổng số tiền phải trả</th>
+                                </tr>
+                            `;
+                            data.forEach(item => {
+                                reportContent += `
+                                    <tr>
+                                        <td class="text-center">${item.name_supplier}</td>
+                                        <td class="text-center">${item.phone_supplier}</td>
+                                        <td class="text-center">${item.type_supplier}</td>
+                                        <td class="text-center">${item.items_purchased}</td>
+                                        <td class="text-center">${item.total_quantity}</td>
+                                        <td class="text-center">${item.total_amount.toLocaleString()}</td>
+                                    </tr>
+                                `;
+                            });
                         }
+
 
                         document.getElementById('reportHeader').innerHTML = reportHeader;
                         document.getElementById('reportContent').innerHTML = reportContent;
