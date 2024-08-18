@@ -7,67 +7,115 @@
     <title>Danh sách hàng hóa</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="../../static/css/product.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 
 <body>
-    <div class="sidebar">
-        <a href="/overview">Tổng quan</a>
-        <a href="/product">Hàng hóa</a>
-        <a href="/transaction">Giao dịch</a>
-        <a href="/treasury">Sổ quỹ</a>
-        <a href="/report">Báo cáo</a>
-        <a href="/staff">Nhân viên</a>
-        <a href="/account">Tài khoản</a>   
-    </div>
-
-    <div class="content">
-        <h1>Danh sách hàng hóa</h1>
-        <p id="realtime-data"></p>
-        <table>
+    <nav class="navbar navbar-custom navbar-expand-lg">
+        <a class="navbar-brand" href="#">
+            <img src="../../static/img/logo_login.png" alt="Logo" style="width: 40px; margin-right: 10px;">
+            Thanh Hải Store
+            <img src="../../static/img/more.png" alt="More" id="toggleSidebar"
+                style="width: 40px; margin-right: 10px; cursor: pointer;">
+        </a>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <div id="notification-icon">
+                        <img src="../../static/img/notification.png" alt="Thông báo" class="notification-icon">
+                    </div>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/account">
+                    <img src="../../static/img/user.png" alt="Tài khoản" class="account-icon">
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <div id="notification-popup" class="notification-popup" style="display: none;">
+        <table class="table">
             <thead>
                 <tr>
-                    <th>Mã hàng</th>
-                    <th>Mã vạch</th>
-                    <th>Tên hàng</th>
-                    <th>Thương hiệu</th>
-                    <th>Màu</th>
-                    <th>Size</th>
-                    <th>Giá vốn</th>
-                    <th>Giá bán</th>
-                    <th>Tồn kho</th>
-                    <th>Đơn vị</th>
-                    <th>Ảnh</th> 
+                    <th></th>
+                    <th></th>
                 </tr>
             </thead>
-            <tbody>
-                {% for product in products %}
-                <tr data-id="{{ product.id_product }}">
-                    <td>{{ product.plu }}</td>
-                    <td>{{ product.barcode }}</td>
-                    <td>{{ product.nameproduct }}</td>
-                    <td>{{ product.brand }}</td>
-                    <td>{{ product.color }}</td>
-                    <td>{{ product.size }}</td>                    
-                    <td>{{ product.costcapital }}</td>
-                    <td>{{ product.price }}</td>
-                    <td>{{ product.inventory }}</td>
-                    <td>{{ product.unit }}</td>
-                    <td>
-                        {% if product.path_image %}
-                        <img src="{{ product.path_image }}" alt="Product Image" class="product-img">
-                        {% else %}
-                        Không có ảnh
-                        {% endif %}
-                    </td>
-                    <td class="action-buttons">
-                        <button onclick="deleteProduct('{{ product.id_product }}')">Xóa</button>
-                        <button onclick="updateProduct('{{ product.id_product }}')">Sửa</button>
-                    </td>
-                </tr>
-                {% endfor %}
+            <tbody id="notification-body">
             </tbody>
         </table>
     </div>
+    <div class="sidebar" id="sidebar">
+        <a href="/overview" ><i class="fas fa-tachometer-alt"></i> Tổng quan</a>
+        <a href="/product" class="active"><i class="fas fa-box-open"></i> Hàng hóa</a>
+        <a href="/transaction"><i class="fas fa-exchange-alt"></i> Giao dịch</a>
+        <a href="/treasury"><i class="fas fa-wallet"></i> Sổ quỹ</a>
+        <a href="/report"><i class="fas fa-chart-line"></i> Báo cáo</a>
+        <a href="/staff"><i class="fas fa-users"></i> Nhân viên</a>
+    </div>
+    <div id="contextMenu" class="context-menu" style="display: none;">
+        <ul>
+            <li id="editOption">Sửa</li>
+            <li id="deleteOption">Xóa</li>
+        </ul>
+    </div>
+    <div class="content" id="content">
+        <div class="card-container">
+            <div class="main-content">
+                <h1>Danh sách hàng hóa</h1>
+                <div class="table-responsive">
+                    <table id="productTable">
+                        <thead>
+                            <tr>
+                                <th>Mã hàng</th>
+                                <th>Mã vạch</th>
+                                <th>Tên hàng</th>
+                                <th>Thương hiệu</th>
+                                <th>Màu</th>
+                                <th>Size</th>
+                                <th>Giá vốn</th>
+                                <th>Giá bán</th>
+                                <th>Tồn kho</th>
+                                <th>Đơn vị</th>
+                                <th>Ảnh</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in products %}
+                            <tr data-id="{{ product.id_product }}">
+                                <td class="plu-cell" data-id="{{ product.id_product }}">
+                                    {{ product.plu }}
+                                </td>
+                                <td>{{ product.barcode }}</td>
+                                <td>{{ product.nameproduct }}</td>
+                                <td>{{ product.brand }}</td>
+                                <td>{{ product.color }}</td>
+                                <td>{{ product.size }}</td>
+                                <td>{{ product.costcapital }}</td>
+                                <td>{{ product.price }}</td>
+                                <td>{{ product.inventory }}</td>
+                                <td>{{ product.unit }}</td>
+                                <td>
+                                    {% if product.path_image %}
+                                    <img src="{{ product.path_image }}" alt="Product Image" class="product-img">
+                                    {% else %}
+                                    Không có ảnh
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-pagination">
+                    <button id="prevPageBtn">&laquo; Trước</button>
+                    <span id="currentPage">Trang 1</span>
+                    <button id="nextPageBtn">Sau &raquo;</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <button id="addRegisterBtn">+</button>
     <button id="exportExcelBtn"></button>
 
@@ -235,12 +283,9 @@
             </form>
         </div>
     </div>
-    <p id="realtime-data"></p>
-    <script>
-        var userName = "{{ user_name }}";
-    </script>
-    <script src="../../static/script/script.js"></script>
+    <!-- <p id="realtime-data"></p> -->
     <script src="../../static/script/product.js"></script>
+    <script src="../../static/script/script.js"></script>
 </body>
 
 </html>

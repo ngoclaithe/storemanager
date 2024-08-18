@@ -113,8 +113,7 @@ body {
 
 .main-content {
     display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
+    flex-direction: column;
 }
 
 #realtime-data {
@@ -234,96 +233,97 @@ tr:hover td {
     background-color: #218838;
 }
 .modal {
-    display: none;
+    display: none; 
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #fff; 
-    padding: 20px;
-    border: 1px solid #ccc; 
-    border-radius: 10px; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); 
     z-index: 1000;
+    overflow: hidden; 
+}
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto; 
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
     width: 90%;
     max-width: 1000px;
     max-height: 80%;
-    overflow-y: auto;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); 
+    overflow-y: auto; 
 }
-
-.modal .modal-content {
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px; 
+}
+.modal-content {
     padding: 20px;
 }
 
-.modal input[type="date"],
-.modal input[type="text"],
-.modal select {
-    width: 100%;
-    padding: 10px; 
-    margin: 10px 0; 
-    box-sizing: border-box;
-    border: 1px solid #ddd;
-    border-radius: 6px; 
-    background-color: #f9f9f9; 
-}
-
-.modal input[type="date"]:focus,
-.modal input[type="text"]:focus,
-.modal select:focus {
-    border-color: #007bff; 
-    background-color: #fff; 
-}
-
-.modal .close {
-    color: #555; 
-    float: right;
-    font-size: 30px; 
-    font-weight: bold;
-    cursor: pointer;
-    transition: color 0.3s; 
-}
-
-.modal .close:hover,
-.modal .close:focus {
-    color: #000; 
-}
-
-.modal button[type="submit"] {
-    background-color: #4CAF50;
-    color: #fff;
-    padding: 14px 24px; 
-    border: none;
-    border-radius: 6px; 
-    cursor: pointer;
-    float: right;
-    transition: background-color 0.3s; 
-}
-
-.modal button[type="submit"]:hover {
-    background-color: #45a049; 
-}
-
-.modal h2 {
+.modal-title {
     color: #333;
-    margin-bottom: 20px; 
+    margin-bottom: 20px;
 }
 
 .modal label {
     font-weight: bold;
     color: #333;
 }
+.form-control {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background-color: #f9f9f9;
+}
 
+.form-control:focus {
+    border-color: #007bff;
+    background-color: #fff;
+}
 
-.form-group-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 15px;
+.close {
+    font-size: 30px;
+    font-weight: bold;
+    color: #555;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+}
+
+.btn-primary {
+    background-color: #4CAF50;
+    color: #fff;
+    padding: 14px 24px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    float: right;
+    transition: background-color 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: #45a049;
 }
 
 .form-group {
     display: flex;
     align-items: center;
-    width: 48%;
+    margin-bottom: 15px;
 }
 
 .form-group label {
@@ -331,7 +331,9 @@ tr:hover td {
     margin-right: 10px;
 }
 
-.form-group input {
+.form-group input,
+.form-group select,
+.form-group textarea {
     flex: 1;
     padding: 5px;
 }
@@ -391,6 +393,86 @@ tr:hover td {
 .table-pagination button:hover {
     background-color: #d45407;
 }
+h1 {
+    margin-bottom: 20px; 
+}
+.summary {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px; 
+    padding: 20px;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.summary h3 {
+    margin-bottom: 15px;
+}
+
+.summary p {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+}
+
+.btn {
+    
+    display: inline-block;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #fff;
+    width: 250px;
+}
+
+#addTreasury {
+    background-color: #28a745;
+    border: 1px solid #28a745;
+}
+
+#addTreasury:hover {
+    background-color: #218838;
+    border: 1px solid #218838;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#addTreasury:active {
+    background-color: #1e7e34;
+    border: 1px solid #1e7e34;
+}
+
+.btn-container {
+    display: flex;
+    gap: 10px; 
+    margin-top: 20px; 
+}
+
+
+#exportCSV {
+    background-color: #28a745;
+    border: 1px solid #28a745;
+}
+
+#exportCSV:hover {
+    background-color: #218838;
+    border: 1px solid #218838;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#exportCSV:active {
+    background-color: #1e7e34;
+    border: 1px solid #1e7e34;
+}
+
+.btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
+}   
 .notification-popup {
     position: absolute;
     top: 60px; 

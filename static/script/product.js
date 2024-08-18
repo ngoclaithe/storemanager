@@ -114,18 +114,79 @@ document.getElementById("exportExcelBtn").addEventListener("click", function () 
             alert('Có lỗi xảy ra khi xuất file CSV.');
         });
 });
+document.addEventListener('DOMContentLoaded', function () {
+    const contextMenu = document.getElementById('contextMenu');
+    let selectedProductId = null;
 
-document.getElementById("filterWaitAdminBtn").addEventListener("click", function () {
-    var rows = document.querySelectorAll("tbody tr");
-    console.log("Ấn button nè");
-    rows.forEach(row => {
-        var noteCell = row.querySelector("td:nth-child(14)");
-        if (noteCell) {
-            if (noteCell.innerText.trim() !== "wait admin") {
-                row.style.display = "none";
-            } else {
-                row.style.display = "";
-            }
+    document.addEventListener('click', function () {
+        contextMenu.style.display = 'none';
+    });
+
+    document.querySelectorAll('tr[data-id]').forEach(function (row) {
+        row.addEventListener('contextmenu', function (event) {
+            event.preventDefault();
+            selectedProductId = this.getAttribute('data-id');
+
+            contextMenu.style.left = event.pageX + 'px';
+            contextMenu.style.top = event.pageY + 'px';
+            contextMenu.style.display = 'block';
+        });
+    });
+
+    document.getElementById('editOption').addEventListener('click', function () {
+        if (selectedProductId) {
+            updateProduct(selectedProductId);
         }
     });
+
+    document.getElementById('deleteOption').addEventListener('click', function () {
+        if (selectedProductId) {
+            deleteProduct(selectedProductId);
+        }
+    });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const rowsPerPage = 5;
+    const table = document.getElementById('productTable');
+    const rows = table.querySelectorAll('tbody tr');
+    const totalRows = rows.length;
+    const totalPages = Math.ceil(totalRows / rowsPerPage);
+    let currentPage = 1;
+
+    function showPage(page) {
+        rows.forEach((row, index) => {
+            if (index >= (page - 1) * rowsPerPage && index < page * rowsPerPage) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        document.getElementById('prevPageBtn').disabled = page === 1;
+        document.getElementById('nextPageBtn').disabled = page === totalPages;
+        document.getElementById('currentPage').textContent = `Trang ${page}`;
+    }
+
+    document.getElementById('prevPageBtn').addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            showPage(currentPage);
+        }
+    });
+
+    document.getElementById('nextPageBtn').addEventListener('click', () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            showPage(currentPage);
+        }
+    });
+
+    showPage(currentPage);
+});
+document.getElementById('toggleSidebar').addEventListener('click', function () {
+    const sidebar = document.getElementById('sidebar');
+    const content = document.getElementById('content');
+    sidebar.classList.toggle('collapsed');
+    content.classList.toggle('collapsed');
 });

@@ -112,9 +112,8 @@ body {
 }
 
 .main-content {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
+    /* display: flex; */
+    flex-direction: column;
 }
 
 #realtime-data {
@@ -233,108 +232,6 @@ tr:hover td {
 #exportExcelBtn:hover {
     background-color: #218838;
 }
-.modal {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #fff; 
-    padding: 20px;
-    border: 1px solid #ccc; 
-    border-radius: 10px; 
-    z-index: 1000;
-    width: 90%;
-    max-width: 1000px;
-    max-height: 80%;
-    overflow-y: auto;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); 
-}
-
-.modal .modal-content {
-    padding: 20px;
-}
-
-.modal input[type="date"],
-.modal input[type="text"],
-.modal select {
-    width: 100%;
-    padding: 10px; 
-    margin: 10px 0; 
-    box-sizing: border-box;
-    border: 1px solid #ddd;
-    border-radius: 6px; 
-    background-color: #f9f9f9; 
-}
-
-.modal input[type="date"]:focus,
-.modal input[type="text"]:focus,
-.modal select:focus {
-    border-color: #007bff; 
-    background-color: #fff; 
-}
-
-.modal .close {
-    color: #555; 
-    float: right;
-    font-size: 30px; 
-    font-weight: bold;
-    cursor: pointer;
-    transition: color 0.3s; 
-}
-
-.modal .close:hover,
-.modal .close:focus {
-    color: #000; 
-}
-
-.modal button[type="submit"] {
-    background-color: #4CAF50;
-    color: #fff;
-    padding: 14px 24px; 
-    border: none;
-    border-radius: 6px; 
-    cursor: pointer;
-    float: right;
-    transition: background-color 0.3s; 
-}
-
-.modal button[type="submit"]:hover {
-    background-color: #45a049; 
-}
-
-.modal h2 {
-    color: #333;
-    margin-bottom: 20px; 
-}
-
-.modal label {
-    font-weight: bold;
-    color: #333;
-}
-
-
-.form-group-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 15px;
-}
-
-.form-group {
-    display: flex;
-    align-items: center;
-    width: 48%;
-}
-
-.form-group label {
-    flex: 0 0 100px;
-    margin-right: 10px;
-}
-
-.form-group input {
-    flex: 1;
-    padding: 5px;
-}
 
 .context-menu {
     width: 5%;
@@ -390,6 +287,132 @@ tr:hover td {
 
 .table-pagination button:hover {
     background-color: #d45407;
+}
+
+#staff-table,
+#calendar {
+    margin-top: 20px;
+    display: none;
+}
+
+#add-staff-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #28a745;
+    color: white;
+    border-radius: 50%;
+    font-size: 24px;
+    width: 60px;
+    height: 60px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    text-align: center;
+    line-height: 60px;
+}
+
+#add-staff-btn:hover {
+    background-color: #218838;
+}
+
+.modal-header {
+    background-color: #007bff;
+    color: white;
+}
+
+.modal-content {
+    border-radius: 10px;
+}
+
+.modal-body label {
+    font-weight: bold;
+}
+
+.form-control.short {
+    width: 400px;
+    display: inline-block;
+}
+#dayfromdayto{
+    width: 600px;
+}
+.form-group {
+    margin: 10px 0;
+}
+
+.calendar {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 80px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.calendar thead tr:first-child th {
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    background-color: #fd7e14;
+    color: white;
+    padding: 12px;
+    border-bottom: 2px solid #ddd;
+}
+
+.calendar thead tr:last-child th {
+    background-color: #007bff;
+    color: white;
+    padding: 12px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+}
+
+.calendar th {
+    background-color: #007bff;
+    color: white;
+    padding: 12px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+}
+
+.calendar td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    font-size: 14px;
+    vertical-align: top;
+    position: relative;
+}
+
+.date-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 5px;
+}
+
+.date-label {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+.timekeeping {
+    color: #007bff;
+    font-weight: bold;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.date-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
 }
 .notification-popup {
     position: absolute;

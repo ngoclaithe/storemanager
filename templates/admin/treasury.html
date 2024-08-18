@@ -6,353 +6,226 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sổ quỹ</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 0;
-            position: relative;
-        }
-
-        .sidebar {
-            height: 100%;
-            width: 250px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background-color: #007bff;
-            padding-top: 20px;
-        }
-
-        .sidebar a {
-            padding: 10px 15px;
-            text-decoration: none;
-            font-size: 18px;
-            color: white;
-            display: block;
-            transition: background-color 0.3s ease;
-        }
-
-        .sidebar a:hover {
-            background-color: #0056b3;
-        }
-
-        .content {
-            margin-left: 250px;
-            padding: 20px;
-        }
-
-        .content h1 {
-            color: #333;
-        }
-
-        .content p {
-            color: #666;
-        }
-
-        #realtime-data {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            color: #333;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th,
-        td {
-            border: 1px solid #dddddd;
-            text-align: left;
-            padding: 8px;
-        }
-
-        th {
-            background-color: #007bff;
-            color: white;
-        }
-
-        td {
-            background-color: #f2f2f2;
-        }
-
-        .action-buttons {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .action-buttons button {
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-
-        .action-buttons button:hover {
-            background-color: #0056b3;
-            color: white;
-        }
-
-        .summary {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            padding: 20px;
-            background-color: white;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .summary h3 {
-            margin-bottom: 15px;
-        }
-
-        .summary p {
-            margin: 0 10px;
-        }
-
-        .btn {
-            display: inline-block;
-            font-size: 16px;
-            font-weight: bold;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: #fff;
-        }
-
-
-        #addTreasury {
-            background-color: #28a745;
-            border: 1px solid #28a745;
-        }
-
-        #addTreasury:hover {
-            background-color: #218838;
-            border: 1px solid #218838;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        #addTreasury:active {
-            background-color: #1e7e34;
-            border: 1px solid #1e7e34;
-        }
-
-
-        #exportCSV {
-            background-color: #28a745;
-            border: 1px solid #28a745;
-        }
-
-        #exportCSV:hover {
-            background-color: #218838;
-            border: 1px solid #218838;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        #exportCSV:active {
-            background-color: #1e7e34;
-            border: 1px solid #1e7e34;
-        }
-
-        .btn:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
-        }
-    </style>
+    <link rel="stylesheet" href="../../static/css/treasury.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 
 <body>
-    <div class="sidebar">
-        <a href="/overview">Tổng quan</a>
-        <a href="/product">Hàng hóa</a>
-        <a href="/transaction">Giao dịch</a>
-        <a href="/treasury">Sổ quỹ</a>
-        <a href="/report">Báo cáo</a>
-        <a href="/staff">Nhân viên</a>
-        <a href="/account">Tài khoản</a>
+    <nav class="navbar navbar-custom navbar-expand-lg">
+        <a class="navbar-brand" href="#">
+            <img src="../../static/img/logo_login.png" alt="Logo" style="width: 40px; margin-right: 10px;">
+            Thanh Hải Store
+            <img src="../../static/img/more.png" alt="More" id="toggleSidebar"
+                style="width: 40px; margin-right: 10px; cursor: pointer;">
+        </a>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <div id="notification-icon">
+                        <img src="../../static/img/notification.png" alt="Thông báo" class="notification-icon">
+                    </div>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/account">
+                    <img src="../../static/img/user.png" alt="Tài khoản" class="account-icon">
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <div class="sidebar" id="sidebar">
+        <a href="/overview"><i class="fas fa-tachometer-alt"></i> Tổng quan</a>
+        <a href="/product"><i class="fas fa-box-open"></i> Hàng hóa</a>
+        <a href="/transaction"><i class="fas fa-exchange-alt"></i> Giao dịch</a>
+        <a href="/treasury" class="active"><i class="fas fa-wallet"></i> Sổ quỹ</a>
+        <a href="/report"><i class="fas fa-chart-line"></i> Báo cáo</a>
+        <a href="/staff"><i class="fas fa-users"></i> Nhân viên</a>
     </div>
-
-    <div class="content">
-        <h1>Sổ quỹ</h1>
-        <p id="realtime-data"></p>
-        <div class="summary">
-            <p>Số tiền đầu kỳ: {{ opening_balance }}</p>
-            <p>Tổng thu: {{ total_income }}</p>
-            <p>Tổng chi: {{ total_expense }}</p>
-            <p>Tồn quỹ: {{ closing_balance }}</p>
-        </div>
-        <button id="addTreasury" class="btn btn-primary mb-3" data-toggle="modal" data-target="#treasuryModal">Lập phiếu
-            thu/chi</button>
-        <button id="exportFile" class="btn btn-primary mb-3">Xuất File</button>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Mã phiếu</th>
-                    <th>Thời gian</th>
-                    <th>Người tạo</th>
-                    <th>Loại thu chi</th>
-                    <th>Người nhận</th>
-                    <th>Người nộp</th>
-                    <th>Giá trị</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for treasury in treasurys %}
-                <tr>
-                    <td>{{ treasury.code_treasury }}</td>
-                    <td>{{ treasury.date }}</td>
-                    <td>{{ treasury.user_create }}</td>
-                    <td>{{ treasury.type_treasury }}</td>
-                    <td>{{ treasury.receiver }}</td>
-                    <td>{{ treasury.submitter }}</td>
-                    <td>{{ treasury.value }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div id="contextMenu" class="context-menu" style="display: none;">
+        <ul>
+            <li id="editOption">Sửa</li>
+            <li id="deleteOption">Xóa</li>
+        </ul>
     </div>
-
-    <div class="modal fade" id="treasuryModal" tabindex="-1" aria-labelledby="treasuryModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="treasuryModalLabel">Lập phiếu thu/chi</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+    <div class="content" id="content">
+        <div class="card-container">
+            <div class="main-content">
+                <h1>Sổ quỹ</h1>
+                <div class="summary">
+                    <p>Số tiền đầu kỳ: {{ opening_balance }}</p>
+                    <p>Tổng thu: {{ total_income }}</p>
+                    <p>Tổng chi: {{ total_expense }}</p>
+                    <p>Tồn quỹ: {{ closing_balance }}</p>
                 </div>
-                <div class="modal-body">
-                    <form id="treasuryForm">
-                        <div class="form-group">
-                            <label for="datetime">Thời gian</label>
-                            <input type="datetime-local" class="form-control" id="datetime" name="datetime">
-                        </div>
-                        <div class="form-group">
-                            <label for="type_treasury">Loại thu/chi</label>
-                            <select class="form-control" id="type_treasury" name="type_treasury"
-                                onchange="toggleReceiverSubmitter()">
-                                <option value="">Chọn loại thu/chi</option>
-                                <option value="Chi tiền">Chi tiền</option>
-                                <option value="Thu tiền">Thu tiền</option>
-                            </select>
-                        </div>
-                        <div class="form-group" id="receiver-group">
-                            <label for="receiver">Tên người nhận</label>
-                            <input type="text" class="form-control" id="receiver" name="receiver"
-                                placeholder="Tìm kiếm">
-                        </div>
-                        <div class="form-group" id="submitter-group">
-                            <label for="submitter">Tên người nộp</label>
-                            <input type="text" class="form-control" id="submitter" name="submitter"
-                                placeholder="Tìm kiếm">
-                        </div>
-                        <div class="form-group">
-                            <label for="value">Giá trị</label>
-                            <input type="number" class="form-control" id="value" name="value" placeholder="0">
-                        </div>
-                        <div class="form-group">
-                            <label for="notes">Ghi chú</label>
-                            <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
-                        </div>
-                        <button type="button" class="btn btn-primary" onclick="submitForm()">Lưu</button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                    </form>
+                <div class="btn-container">
+                    <button id="addTreasury" class="btn btn-primary mb-3" data-toggle="modal"
+                        data-target="#treasuryModal">Lập phiếu thu/chi</button>
+                    <button id="exportFile" class="btn btn-primary mb-3">Xuất File</button>
+                </div>
+
+                <div class="table-responsive">
+                    <table id="productTable">
+                        <thead>
+                            <tr>
+                                <th>Mã phiếu</th>
+                                <th>Thời gian</th>
+                                <th>Người tạo</th>
+                                <th>Loại thu chi</th>
+                                <th>Người nhận</th>
+                                <th>Người nộp</th>
+                                <th>Giá trị</th>
+                                <th>Ghi chú</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for treasury in treasurys %}
+                            <tr data-id="{{ treasury.id_treasury }}">
+                                <td>{{ treasury.code_treasury }}</td>
+                                <td>{{ treasury.date }}</td>
+                                <td>{{ treasury.user_create }}</td>
+                                <td>{{ treasury.type_treasury }}</td>
+                                <td>{{ treasury.receiver }}</td>
+                                <td>{{ treasury.submitter }}</td>
+                                <td>{{ treasury.value }}</td>
+                                <td>{{ treasury.note }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-pagination">
+                    <button id="prevPageBtn">&laquo; Trước</button>
+                    <span id="currentPage">Trang 1</span>
+                    <button id="nextPageBtn">Sau &raquo;</button>
                 </div>
             </div>
         </div>
-    </div>
+        <div class="modal fade" id="treasuryModal" data-backdrop="false">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="treasuryModalLabel">Lập phiếu thu/chi</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="treasuryForm">
+                            <div class="form-group">
+                                <label for="datetime">Thời gian</label>
+                                <input type="datetime-local" class="form-control" id="datetime" name="datetime">
+                            </div>
+                            <div class="form-group">
+                                <label for="type_treasury">Loại thu/chi</label>
+                                <select class="form-control" id="type_treasury" name="type_treasury"
+                                    onchange="toggleReceiverSubmitter()">
+                                    <option value="">Chọn loại thu/chi</option>
+                                    <option value="Chi tiền">Chi tiền</option>
+                                    <option value="Thu tiền">Thu tiền</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="receiver-group">
+                                <label for="receiver">Tên người nhận</label>
+                                <input type="text" class="form-control" id="receiver" name="receiver"
+                                    placeholder="Tìm kiếm">
+                            </div>
+                            <div class="form-group" id="submitter-group">
+                                <label for="submitter">Tên người nộp</label>
+                                <input type="text" class="form-control" id="submitter" name="submitter"
+                                    placeholder="Tìm kiếm">
+                            </div>
+                            <div class="form-group">
+                                <label for="value">Giá trị</label>
+                                <input type="number" class="form-control" id="value" name="value" placeholder="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="notes">Ghi chú</label>
+                                <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+                            </div>
+                            <div class="btn-container">
+                                <button type="button" class="btn btn-primary" onclick="submitForm()">Lưu</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                            </div>
 
-    <script>
-        function updateRealtimeData() {
-            var currentDate = new Date();
-            var currentTime = currentDate.toLocaleTimeString();
-            document.getElementById("realtime-data").innerHTML = "Tài khoản: {{ user_name }}, " + currentTime;
-        }
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        setInterval(updateRealtimeData, 1000);
+        <div class="modal fade" id="editTreasuryModal" data-backdrop="false">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editTreasuryModalLabel">Sửa phiếu thu/chi</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editTreasuryForm">
+                            <div class="form-group">
+                                <label for="edit_datetime">Thời gian</label>
+                                <input type="datetime-local" class="form-control" id="edit_datetime" name="datetime">
+                            </div>
+                            <div class="form-group">
+                                <label for="edit_type_treasury">Loại thu/chi</label>
+                                <select class="form-control" id="edit_type_treasury" name="type_treasury">
+                                    <option value="">Chọn loại thu/chi</option>
+                                    <option value="Chi tiền">Chi tiền</option>
+                                    <option value="Thu tiền">Thu tiền</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="edit_user_create-group">
+                                <label for="edit_user_create">Người tạo</label>
+                                <input type="text" class="form-control" id="edit_user_create" name="user_create">
+                            </div>
+                            <div class="form-group" id="edit_receiver-group">
+                                <label for="edit_receiver">Tên người nhận</label>
+                                <input type="text" class="form-control" id="edit_receiver" name="receiver"
+                                    placeholder="Tìm kiếm">
+                            </div>
+                            <div class="form-group" id="edit_submitter-group">
+                                <label for="edit_submitter">Tên người nộp</label>
+                                <input type="text" class="form-control" id="edit_submitter" name="submitter"
+                                    placeholder="Tìm kiếm">
+                            </div>
+                            <div class="form-group">
+                                <label for="edit_value">Giá trị</label>
+                                <input type="number" class="form-control" id="edit_value" name="value" placeholder="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="edit_notes">Ghi chú</label>
+                                <textarea class="form-control" id="edit_notes" name="notes" rows="3"></textarea>
+                            </div>
+                            <div class="btn-container">
+                                <button type="button" class="btn btn-primary" onclick="updateForm()">Cập nhật</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                            </div>
 
-        function toggleReceiverSubmitter() {
-            var typeTreasury = document.getElementById('type_treasury').value;
-            if (typeTreasury === 'Chi tiền') {
-                document.getElementById('receiver-group').style.display = 'block';
-                document.getElementById('submitter-group').style.display = 'none';
-            } else if (typeTreasury === 'Thu tiền') {
-                document.getElementById('receiver-group').style.display = 'none';
-                document.getElementById('submitter-group').style.display = 'block';
-            } else {
-                document.getElementById('receiver-group').style.display = 'none';
-                document.getElementById('submitter-group').style.display = 'none';
-            }
-        }
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="notification-popup" class="notification-popup" style="display: none;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="notification-body">
+                </tbody>
+            </table>
+        </div>
 
-        function submitForm() {
-            var form = document.getElementById('treasuryForm');
-            var formData = new FormData(form);
-
-            var jsonObject = {};
-            formData.forEach((value, key) => {
-                jsonObject[key] = value;
-            });
-
-            fetch('/add_treasury', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(jsonObject)
-            }).then(response => {
-                if (response.status === 200) {
-                    alert("Phiếu thu chi đã được thêm thành công");
-                    location.reload();
-                } else {
-                    alert('Thêm phiếu thu chi thất bại');
-                }
-            }).catch(error => {
-                console.error('Error:', error);
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            toggleReceiverSubmitter();
-        });
-
-        document.getElementById("exportFile").addEventListener("click", function () {
-            fetch('/exportfiletreasury', {
-                method: 'GET'
-            })
-                .then(response => {
-                    if (response.ok) {
-                        return response.blob(); 
-                    } else {
-                        throw new Error("Xuất CSV không thành công.");
-                    }
-                })
-                .then(blob => {
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'Baocaosoquy.csv';
-                    document.body.appendChild(a);
-                    a.click();
-                    a.remove(); 
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Có lỗi xảy ra khi xuất file CSV.');
-                });
-        });
-
-    </script>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script src="../../static/script/treasury.js"></script>
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script src="../../static/script/script.js"></script>
 </body>
 
 </html>

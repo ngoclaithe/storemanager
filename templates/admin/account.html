@@ -6,67 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý tài khoản</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../static/css/account.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 0;
-            position: relative;
-        }
-
-        .sidebar {
-            height: 100%;
-            width: 250px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background-color: #007bff;
-            padding-top: 20px;
-        }
-
-        .sidebar a {
-            padding: 10px 15px;
-            text-decoration: none;
-            font-size: 18px;
-            color: white;
-            display: block;
-            transition: background-color 0.3s ease;
-        }
-
-        .sidebar a:hover {
-            background-color: #0056b3;
-        }
-
-        .content {
-            margin-left: 250px;
-            padding: 20px;
-            /* background-image: url('../../static/img/background.png'); */
-            background-size: cover;
-            background-position: center;
-            color: white;
-        }
-
-        .content h1 {
-            color: #333;
-        }
-
-        .content p {
-            color: #666;
-            text-align: left;
-            margin-left: 30px;
-            font-size: 16px;
-        }
-
-        .content label {
-            color: #333;
-            display: block;
-            margin-left: 30px;
-            margin-bottom: 5px;
-            font-size: 18px;
-        }
-
         .user-info {
+            margin-top: 280px;
             margin: 0 auto;
             max-width: 400px;
             padding: 20px;
@@ -98,11 +42,14 @@
             font-size: 16px;
             cursor: pointer;
             transition: background-color 0.3s ease;
+            width: 200px;
+            margin-left: 120px;
         }
 
         button[type="submit"]:hover {
             background-color: #0056b3;
         }
+
         .logout-container {
             position: fixed;
             top: 10px;
@@ -118,40 +65,63 @@
 </head>
 
 <body>
-    <div class="sidebar">
-        <a href="/overview">Tổng quan</a>
-        <a href="/product">Hàng hóa</a>
-        <a href="/transaction">Giao dịch</a>
-        <a href="/treasury">Sổ quỹ</a>
-        <a href="/report">Báo cáo</a>
-        <a href="/staff">Nhân viên</a>
-        <a href="/account">Tài khoản</a>  
+    <nav class="navbar navbar-custom navbar-expand-lg">
+        <a class="navbar-brand" href="#">
+            <img src="../../static/img/logo_login.png" alt="Logo" style="width: 40px; margin-right: 10px;">
+            Thanh Hải Store
+            <img src="../../static/img/more.png" alt="More" id="toggleSidebar"
+                style="width: 40px; margin-right: 10px; cursor: pointer;">
+        </a>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <div id="notification-icon">
+                        <img src="../../static/img/notification.png" alt="Thông báo" class="notification-icon">
+                    </div>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/account">
+                    <img src="../../static/img/user.png" alt="Tài khoản" class="account-icon">
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="sidebar" id="sidebar">
+        <a href="/overview"><i class="fas fa-tachometer-alt"></i> Tổng quan</a>
+        <a href="/product"><i class="fas fa-box-open"></i> Hàng hóa</a>
+        <a href="/transaction"><i class="fas fa-exchange-alt"></i> Giao dịch</a>
+        <a href="/treasury"><i class="fas fa-wallet"></i> Sổ quỹ</a>
+        <a href="/report"><i class="fas fa-chart-line"></i> Báo cáo</a>
+        <a href="/staff"><i class="fas fa-users"></i> Nhân viên</a>
     </div>
-    <div class="logout-container">
-        <form id="logout-form">
-            <button type="submit" class="logout-button">Đăng xuất</button>
-        </form>
-    </div>
-    <div class="content">
-        <div class="user-info">
-            <h1>Thông tin tài khoản</h1>
-            <label for="username">Tên người dùng:</label>
-            <p id="username" style="font-weight: bold; font-size: 18px; color: #333;">{{ user_name }}</p>
-            <label for="usertype">Loại tài khoản:</label>
-            <p id="usertype" style="font-weight: bold; font-size: 18px; color: #333;">{{ user_type }}</p>
-            <label for="email">Email:</label>
-            <p id="email" style="font-size: 16px; color: #333;">{{ email }}</p>
-            <form id="change-password-form">
-                <label for="old_password" style="font-size: 18px; color: #333;">Mật khẩu cũ:</label>
-                <input type="password" id="old_password" name="old_password" required><br>
-                <label for="new_password" style="font-size: 18px; color: #333;">Mật khẩu mới:</label>
-                <input type="password" id="new_password" name="new_password" required><br>
-                <button type="submit">Thay đổi mật khẩu</button>
-                <p class="success-message">{{ password_message }}</p>
-            </form>
+    <div class="content" id="content">
+        <div class="card-container">
+            <div class="main-content">
+                <!-- <div class="user-info"> -->
+                <h1>Thông tin tài khoản</h1>
+                <label for="username">Tên người dùng:</label>
+                <p id="username" style="font-weight: bold; font-size: 18px; color: #333;">{{ user_name }}</p>
+                <label for="usertype">Loại tài khoản:</label>
+                <p id="usertype" style="font-weight: bold; font-size: 18px; color: #333;">{{ user_type }}</p>
+                <label for="email">Email:</label>
+                <p id="email" style="font-size: 16px; color: #333;">{{ email }}</p>
+                <form id="change-password-form">
+                    <label for="old_password" style="font-size: 18px; color: #333;">Mật khẩu cũ:</label>
+                    <input type="password" id="old_password" name="old_password" required><br>
+                    <label for="new_password" style="font-size: 18px; color: #333;">Mật khẩu mới:</label>
+                    <input type="password" id="new_password" name="new_password" required><br>
+                    <button type="submit">Thay đổi mật khẩu</button>
+                    <p class="success-message">{{ password_message }}</p>
+                </form>
+                <form id="logout-form" method="get" action="/logout">
+                    <button type="submit" class="logout-button">Đăng xuất</button>
+                </form>
+                <!-- </div> -->
+            </div>
         </div>
     </div>
-    <p id="realtime-data"></p>
     <script>
         document.getElementById("change-password-form").addEventListener("submit", function (event) {
             event.preventDefault();
@@ -173,34 +143,15 @@
                 });
         });
 
-        document.getElementById("update-username-form").addEventListener("submit", function (event) {
-            event.preventDefault();
-            var formData = new FormData(this);
-            fetch('/update_username', {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => {
-                    if (response.status === 200) {
-                        alert("Đã cập nhật tên người dùng thành công");
-                        location.reload();
-                    } else {
-                        alert("Thay đổi tên người dùng không thành công");
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-        });
         document.getElementById("logout-form").addEventListener("submit", function (event) {
             event.preventDefault();
-            fetch('/logout', {
+            fetch(this.action, {
                 method: 'GET'
             })
                 .then(response => {
                     if (response.status === 200) {
                         alert("Đăng xuất thành công");
-                        location.href = '/login_page';
+                        window.location.href = '/login_page';
                     } else {
                         alert("Đăng xuất không thành công");
                     }
@@ -209,10 +160,14 @@
                     console.error('Error:', error);
                 });
         });
-
+        document.getElementById('toggleSidebar').addEventListener('click', function () {
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('content');
+            sidebar.classList.toggle('collapsed');
+            content.classList.toggle('collapsed');
+        });
     </script>
-
-
+    <script src="../../static/script/script.js"></script>
 </body>
 
 </html>

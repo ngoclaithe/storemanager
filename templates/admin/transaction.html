@@ -1,176 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Giao dịch</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0; 
-            margin: 0;
-            padding: 0;
-            position: relative; 
-        }
-        .sidebar {
-            height: 100%;
-            width: 250px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background-color: #007bff; 
-            padding-top: 20px;
-        }
-        .sidebar a {
-            padding: 10px 15px;
-            text-decoration: none;
-            font-size: 18px;
-            color: white;
-            display: block;
-            transition: background-color 0.3s ease;
-        }
-        .sidebar a:hover {
-            background-color: #0056b3; 
-        }
-        .content {
-            margin-left: 250px;
-            padding: 20px;
-        }
-        .content h1 {
-            color: #333; 
-        }
-        .content p {
-            color: #666; 
-        }
-        #realtime-data {
-            position: absolute; 
-            top: 20px; 
-            right: 20px; 
-            color: #333;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #dddddd;
-            text-align: left;
-            padding: 8px;
-        }
-        th {
-            background-color: #007bff;
-            color: white;
-        }
-        td {
-            background-color: #f2f2f2;
-        }
-        .action-buttons {
-            display: flex;
-            justify-content: space-between;
-        }
-        .action-buttons button {
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-        .action-buttons button:hover {
-            background-color: #0056b3;
-            color: white;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="../../static/css/transaction.css">
 </head>
-<body>
-    <div class="sidebar">
-        <a href="/overview">Tổng quan</a>
-        <a href="/product">Hàng hóa</a>
-        <a href="/transaction">Giao dịch</a>
-        <a href="/treasury">Sổ quỹ</a>
-        <a href="/report">Báo cáo</a>
-        <a href="/staff">Nhân viên</a>
-        <a href="/account">Tài khoản</a>  
-    </div>
 
-    <div class="content">
-        <h1>Quản lý giao dịch</h1>
-        <p id="realtime-data"></p>
-        <button id="addBillExport" class="btn btn-primary mb-3" onclick="openNewTabExport()">Bán Hàng</button>
-        <button id="addBillImport" class="btn btn-primary mb-3" onclick="openNewTabImport()">Nhập Hàng</button>        
-        <table>
+<body>
+    <nav class="navbar navbar-custom navbar-expand-lg">
+        <a class="navbar-brand" href="#">
+            <img src="../../static/img/logo_login.png" alt="Logo" style="width: 40px; margin-right: 10px;">
+            Thanh Hải Store
+            <img src="../../static/img/more.png" alt="More" id="toggleSidebar"
+                style="width: 40px; margin-right: 10px; cursor: pointer;">
+        </a>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <div id="notification-icon">
+                        <img src="../../static/img/notification.png" alt="Thông báo" class="notification-icon">
+                    </div>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/account">
+                    <img src="../../static/img/user.png" alt="Tài khoản" class="account-icon">
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <div id="notification-popup" class="notification-popup" style="display: none;">
+        <table class="table">
             <thead>
                 <tr>
-                    <th>Mã hóa đơn</th>
-                    <th>Loại giao dịch</th>                    
-                    <th>Thời gian</th>
-                    <th>Loại khách hàng</th>
-                    <th>Loại nhà cung cấp</th>
-                    <th>Số lượng</th>
-                    <th>Tổng tiền hàng</th>
-                    <th>Giảm giá(%)</th>
-                    <th>Tổng sau giảm giá</th>
-                    <!-- <th>Tên khách</th> -->
-                    <th>Khách đã trả</th>
-                    <th>Hành động</th>
+                    <th></th>
+                    <th></th>
                 </tr>
             </thead>
-            <tbody>
-                {% for bill in bills %}
-                <tr>
-                    <td>{{ bill.code_bill or '' }}</td>
-                    <td>{{ bill.type_transaction or '' }}</td>
-                    <td>{{ bill.date or '' }}</td>
-                    <td>{{ bill.type_customer or '' }}</td>
-                    <td>{{ bill.type_supplier or '' }}</td>
-                    <td>{{ bill.quantity or '' }}</td>
-                    <td>{{ bill.totalprice or '' }}</td>
-                    <td>{{ bill.discount or '' }}</td>
-                    <td>{{ bill.afterdiscount or '' }}</td>
-                    <td>{{ bill.customerpaid or '' }}</td>
-                    <td class="action-buttons">
-                        <button onclick="deleteBill('{{ bill.id_bill }}')">Xóa</button>
-                    </td>
-                </tr>
-                {% endfor %}
+            <tbody id="notification-body">
             </tbody>
         </table>
     </div>
-    
-    
-    <script>
-        function openNewTabExport() {
-            window.open('/add_bill_export_page', '_blank');
-        }
-        function openNewTabImport() {
-            window.open('/add_bill_import_page', '_blank');
-        }        
-        function deleteBill(billId) {
-            fetch('/delete_bill', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ id_bill: billId }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload();
-                } else {
-                    alert('Xóa hóa đơn thất bại');
-                }
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-        }
 
-        function updateRealtimeData() {
-            var currentDate = new Date();
-            var currentTime = currentDate.toLocaleTimeString();
-            document.getElementById("realtime-data").innerHTML = "Tài khoản: {{ user_name }}, " + currentTime;
-        }
+    <div class="sidebar" id="sidebar">
+        <a href="/overview"><i class="fas fa-tachometer-alt"></i> Tổng quan</a>
+        <a href="/product"><i class="fas fa-box-open"></i> Hàng hóa</a>
+        <a href="/transaction" class="active"><i class="fas fa-exchange-alt"></i> Giao dịch</a>
+        <a href="/treasury"><i class="fas fa-wallet"></i> Sổ quỹ</a>
+        <a href="/report"><i class="fas fa-chart-line"></i> Báo cáo</a>
+        <a href="/staff"><i class="fas fa-users"></i> Nhân viên</a>
+    </div>
+    
+    <div class="content" id="content">
+        <div class="card-container">
+            <div class="main-content">
+                <h1>Quản lý giao dịch</h1>
+                <div class="btn-container">
+                    <button id="addBillExport" class="btn btn-primary mb-3" onclick="openNewTabExport()">Bán Hàng</button>
+                    <button id="addBillImport" class="btn btn-primary mb-3" onclick="openNewTabImport()">Nhập Hàng</button>
+                </div>
 
-        setInterval(updateRealtimeData, 1000); 
-    </script>
+                <div class="table-responsive">
+                    <table id="productTable">
+                        <thead>
+                            <tr>
+                                <th>Mã hóa đơn</th>
+                                <th>Loại giao dịch</th>
+                                <th>Thời gian</th>
+                                <th>Loại khách hàng</th>
+                                <th>Loại nhà cung cấp</th>
+                                <th>Số lượng</th>
+                                <th>Tổng tiền hàng</th>
+                                <th>Giảm giá(%)</th>
+                                <th>Tổng sau giảm giá</th>
+                                <th>Khách đã trả</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for bill in bills %}
+                            <tr data-id="{{ bill.id_bill }}">
+                                <td>{{ bill.code_bill or '' }}</td>
+                                <td>{{ bill.type_transaction or '' }}</td>
+                                <td>{{ bill.date or '' }}</td>
+                                <td>{{ bill.type_customer or '' }}</td>
+                                <td>{{ bill.type_supplier or '' }}</td>
+                                <td>{{ bill.quantity or '' }}</td>
+                                <td>{{ bill.totalprice or '' }}</td>
+                                <td>{{ bill.discount or '' }}</td>
+                                <td>{{ bill.afterdiscount or '' }}</td>
+                                <td>{{ bill.customerpaid or '' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+
+                    </table>
+                </div>
+                <div class="table-pagination">
+                    <button id="prevPageBtn">&laquo; Trước</button>
+                    <span id="currentPage">Trang 1</span>
+                    <button id="nextPageBtn">Sau &raquo;</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../../static/script/transaction.js"></script>
+    <script src="../../static/script/script.js"></script>
 </body>
+
 </html>

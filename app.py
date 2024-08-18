@@ -614,7 +614,7 @@ def admin_account():
     if "user_id" in session and session["usertype"] == "admin":
         user = Register.query.filter_by(id=session["user_id"]).first()
         if user:
-            return render_template("admin/account.html", user_name=user.user)
+            return render_template("admin/account.html", user_name=user.user, user_type=user.usertype, email=user.email)
         else:
             return "Không tìm thấy thông tin người dùng"
     else:
@@ -865,7 +865,25 @@ def add_treasury():
 
         return "Phiếu thu chi đã được thêm thành công", 200
     return "Phương thức không hợp lệ", 400
+@app.route("/update_treasury/<int:idTreasury>", methods=["POST"])
+def update_treasury(idTreasury):
+    if request.method == "POST":
+        data = request.json
+        treasury = Treasury.query.get(idTreasury)
+        if treasury:
+            treasury.date = data.get('date', treasury.date)
+            treasury.type_treasury = data.get('type_treasury', treasury.type_treasury)
+            treasury.receiver = data.get('receiver', treasury.receiver)
+            treasury.submitter = data.get('submitter', treasury.submitter)
+            treasury.value = data.get('value', treasury.value)
+            treasury.note = data.get('note', treasury.note)
+            treasury.user_create = data.get('user_create', treasury.user_create)
 
+            db.session.commit()
+
+            return jsonify({"message": "Cập nhật thành công"}), 200
+        else:
+            return jsonify({"message": "Không tìm thấy sản phẩm"}), 404
 
 @app.route("/exportfiletreasury", methods=["GET"])
 def export_file_treasury():
@@ -907,7 +925,17 @@ def export_file_treasury():
     except Exception as e:
         print("Exception occurred:", str(e))
         return jsonify({"message": str(e)}), 500
-
+@app.route("/delete_treasury/<int:idTreasury>", methods=["DELETE"])
+def delete_treasury(idTreasury):
+    treasury = Treasury.query.get(idTreasury)
+    
+    if treasury:
+        db.session.delete(treasury)
+        db.session.commit()
+        
+        return jsonify({"message": "Phiếu thu chi đã được xóa thành công"}), 200
+    else:
+        return jsonify({"message": "Không tìm thấy phiếu thu chi"}), 404
 
 @app.route("/export_product", methods=["GET"])
 def export_product():
@@ -982,7 +1010,8 @@ def list_staff():
 @app.route("/add_staff", methods=["POST"])
 def add_staff():
     if request.method == "POST":
-        data = request.json
+        data = request.form.to_dict()
+        print(data)
         try:
             new_staff = Staff(
                 name_staff=data.get("name_staff"),
@@ -1000,15 +1029,14 @@ def add_staff():
                 phone=data.get("phone"),
             )
             db.session.add(new_user)
-            db.session.commit()
             db.session.add(new_staff)
             db.session.commit()
 
-            return jsonify({"message": "Staff added successfully"}), 200
+            return jsonify({"success": True, "message": "Staff added successfully"}), 200
         except Exception as e:
             print("Exception occurred:", str(e))
             db.session.rollback()
-            return jsonify({"message": str(e)}), 500
+            return jsonify({"success": False, "message": str(e)}), 500
 
 
 @app.route("/report_product", methods=["POST"])
@@ -1108,7 +1136,7 @@ def get_timekeeping(staff_id):
         }
         for record in records
     ]
-    print(timekeeping_data)
+    # print(timekeeping_data)
     return jsonify(timekeeping_data)
 
 
@@ -1206,7 +1234,40 @@ def salary_staff_calcu():
     
     print(results)
     return jsonify(results)
+@app.route('/notification', methods=['GET'])
+def get_notifications():
+    now = datetime.utcnow()
+    recent_bills = Bill.query.order_by(Bill.date.desc()).limit(5).all()
 
+    notifications = []
+    for bill in recent_bills:
+        product = Product.query.filter_by(id_product=bill.id_product).first()
+        if product:
+            product_name = product.nameproduct
+        else:
+            product_name = "Sản phẩm không tìm thấy"
+        time_diff = now - bill.date
+        if time_diff.days > 0:
+            time_str = f"{time_diff.days} ngày trước"
+        elif time_diff.seconds // 3600 > 0:
+            time_str = f"{time_diff.seconds // 3600} giờ trước"
+        else:
+            time_str = f"{time_diff.seconds // 60} phút trước"
+
+        if bill.type_transaction == 'Bán Hàng':
+            transaction_description = f"Đã bán {bill.quantity} {product_name}"
+        elif bill.type_transaction == 'Nhập Hàng':
+            transaction_description = f"Đã nhập {bill.quantity} {product_name} "
+        else:
+            transaction_description = f"Giao dịch ID {bill.id_product}"
+
+        notifications.append({
+            'transaction': transaction_description,
+            'time': time_str
+        })
+    print(notifications)
+
+    return jsonify(notifications)
 
 @app.route("/check_db")
 def check_db():

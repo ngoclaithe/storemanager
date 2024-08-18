@@ -113,8 +113,7 @@ body {
 
 .main-content {
     display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
+    flex-direction: column;
 }
 
 #realtime-data {
@@ -390,6 +389,11 @@ tr:hover td {
 
 .table-pagination button:hover {
     background-color: #d45407;
+}
+.btn-container {
+    display: flex;
+    gap: 10px; 
+    margin-top: 20px; 
 }
 .notification-popup {
     position: absolute;

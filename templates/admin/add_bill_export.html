@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tạo hóa đơn</title>
+    <title>Hóa đơn bán hàng</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
@@ -37,6 +37,32 @@
             width: 65%;
             border-right: none;
             overflow-y: auto;
+        }
+
+        .right-panel img {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 10px;
+        }
+
+        .right-panel h1 {
+            text-align: center;
+        }
+
+        .right-panel h2 {
+            width: 600px;
+            border-top: 4px solid #080808;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .right-panel h3 {
+            text-align: center;
+            font-size: medium;
+            /* margin-left: 50px; */
+            margin-right: 100px;
+
         }
 
         .product-list {
@@ -103,7 +129,7 @@
         }
 
         .customer-list {
-            max-height: 200px;
+            max-height: 100px;
             overflow-y: auto;
             border: 1px solid #ddd;
             background-color: #fff;
@@ -114,12 +140,40 @@
         }
 
         .customer-list li {
-            padding: 5px;
             cursor: pointer;
         }
 
         .customer-list li:hover {
             background-color: #f0f0f0;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .form-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .form-row img {
+            margin-bottom: 0px;
+        }
+
+        .form-row label {
+            margin-right: 10px;
+            white-space: nowrap;
+        }
+
+        .form-row input {
+            flex: 1;
+            border: none;
+            background-color: transparent;
+            padding: 5px;
+            box-shadow: none;
         }
 
         @media print {
@@ -139,8 +193,9 @@
                 width: 100%;
                 height: auto;
             }
+
             #checkout {
-            display: none;
+                display: none;
             }
         }
     </style>
@@ -148,7 +203,7 @@
 
 <body>
     <div class="container left-panel">
-        <h1>Tạo hóa đơn</h1>
+        <h1>Bán hàng</h1>
         <div class="form-group">
             <label for="searchProduct">Tìm kiếm sản phẩm(Mã sản phẩm):</label>
             <input type="text" id="searchProduct" class="form-control" placeholder="Nhập tên hoặc mã sản phẩm">
@@ -168,10 +223,6 @@
                 <input type="text" id="unit" class="form-control" readonly>
             </div>
             <div class="form-group">
-                <label for="discount">Giảm giá (%):</label>
-                <input type="number" id="discount" class="form-control" value="0">
-            </div>
-            <div class="form-group">
                 <label for="typeCustomer">Loại khách hàng:</label>
                 <select id="typeCustomer" class="form-control">
                     <option value="Khách lẻ">Khách lẻ</option>
@@ -182,50 +233,77 @@
         </div>
     </div>
     <div class="container right-panel">
-        <h2>Phiếu xem trước hóa đơn</h2>
+        <div class="main-content">
+            <div class="form-row">
+                <img src="../../static/img/logo_login.png" alt="Product Overview">
+                <h1>Cửa hàng quần áo Thanh Hải</h1>
+            </div>
+            <div class="form-row">
+                <h3>Địa chỉ: Số 66, Ngõ 192 Lê Trọng Tấn, Khương Mai, Hà Nội</h3>
+                <h3>Điện thoại: 0921258228</h3>
+            </div>
+            <div class="form-row">
+                <label for="date_now">Ngày giờ:</label>
+                <input type="datetime" id="date_now" class="form-control" name="date_now" required>
+            </div>
+            <h2>Hóa đơn bán hàng</h2>
+
+        </div>
+        <div class="form-row">
+            <label for="type_customer">Loại khách hàng:</label>
+            <input type="text" id="type_customer" class="form-control" name="type_customer" required>
+        </div>
+
+        <div class="form-row">
+            <label for="name_customer">Tên khách hàng:</label>
+            <input type="text" id="name_customer" class="form-control" name="name_customer" required>
+        </div>
+        <div class="form-row">
+            <label for="phone_customer">Số điện thoại khách hàng:</label>
+            <input type="number" id="phone_customer" class="form-control" name="phone_customer" required>
+            <ul id="customerList" class="customer-list"></ul>
+        </div>
         <div class="bill-preview" id="billPreview">
             <table class="table">
                 <thead>
                     <tr>
                         <th>Tên sản phẩm</th>
-                        <th>Size</th>
-                        <th>Màu</th>
                         <th>Số lượng</th>
-                        <th>Đơn vị</th>
-                        <th>Giảm giá (%)</th>
+                        <th>Đơn giá</th>
                         <th>Tổng giá</th>
-                        <th>Tổng sau giảm giá</th>
-                        <th>Loại khách hàng</th>
                     </tr>
                 </thead>
                 <tbody id="billItems">
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colspan="7">Tổng tiền:</td>
+                        <td colspan="3">Tổng tiền:</td>
                         <td id="totalAmount">0</td>
                     </tr>
                 </tfoot>
             </table>
-            <div class="form-group total-section">
-                <label for="name_customer">Tên khách hàng:</label>
-                <input type="text" id="name_customer" class="form-control" name="name_customer" required>
+            <div class="form-row">
+                <label for="discount_bill">Giảm giá(%):</label>
+                <input type="number" id="discount_bill" class="form-control" name="discount_bill" value="0">
             </div>
-            <div class="form-group total-section">
-                <label for="phone_customer">Số điện thoại khách hàng:</label>
-                <input type="number" id="phone_customer" class="form-control" name="phone_customer" required>
-                <ul id="customerList" class="customer-list"></ul>
+            <div class="form-row">
+                <label for="afterdiscount">Thành tiền(Đã giảm giá):</label>
+                <input type="number" id="afterdiscount" class="form-control" readonly>
             </div>
-            <div class="form-group total-section">
+
+            <div class="form-row">
                 <label for="amountPaid">Khách hàng trả:</label>
                 <input type="number" id="amountPaid" class="form-control" placeholder="Nhập số tiền khách hàng trả">
             </div>
-            <div class="form-group total-section">
+            <div class="form-row">
                 <label for="changeAmount">Tiền thừa:</label>
                 <input type="text" id="changeAmount" class="form-control" readonly>
             </div>
+            <div class="form-row">
+                <label for="usercreate">Người tạo hóa đơn:</label>
+                <input type="text" id="usercreate" class="form-control" readonly>
+            </div>
             <button class="btn btn-success" id="checkout">Thanh toán</button>
-            <!-- <button class="btn btn-secondary" id="printReceipt">In hóa đơn</button> -->
         </div>
     </div>
 
@@ -240,39 +318,51 @@
         var billItems = [];
         var totalPriceBeforeDiscount = 0;
 
+        function updateDateNow() {
+            var now = new Date();
+            var formattedDate = now.toISOString().slice(0, 19).replace('T', ' ');
+            $('#date_now').val(formattedDate);
+        }
+
         function updateTotalAmount() {
             var total = billItems.reduce((sum, item) => sum + item.totalPrice, 0);
             $('#totalAmount').text(total.toFixed(2));
-            totalPriceBeforeDiscount = total;
-            $('#afterDiscount').text((total - (total * (parseFloat($('#discount').val()) || 0) / 100)).toFixed(2));
+
+            var discount = parseFloat($('#discount_bill').val()) || 0;
+            var afterDiscount = total - (total * discount / 100);
+            $('#afterdiscount').val(afterDiscount.toFixed(2));
+
             updateChangeAmount();
         }
 
         function updateChangeAmount() {
-            var totalAmount = parseFloat($('#totalAmount').text());
+            var afterDiscount = parseFloat($('#afterdiscount').val());
             var amountPaid = parseFloat($('#amountPaid').val()) || 0;
-            var changeAmount = amountPaid - totalAmount;
+            var changeAmount = amountPaid - afterDiscount;
             $('#changeAmount').val(changeAmount.toFixed(2));
         }
 
 
         function addToBill() {
-
+            var userName = "{{ user_name }}";
             var quantity = parseFloat($('#quantity').val());
             var unit = $('#unit').val();
-            var discount = parseFloat($('#discount').val());
+            var discount = parseFloat($('#discount_bill').val());
             var typeCustomer = $('#typeCustomer').val();
             var totalPrice = selectedProduct.price * quantity;
             var totalPriceAfterDiscount = totalPrice - (totalPrice * discount / 100);
+
 
             var billItem = {
                 productId: selectedProduct.id,
                 size: selectedProduct.size,
                 color: selectedProduct.color,
                 productName: selectedProduct.name,
+                price: selectedProduct.price,
                 quantity: quantity,
                 unit: unit,
                 discount: discount,
+
                 totalPrice: totalPrice,
                 totalPriceAfterDiscount: totalPriceAfterDiscount,
                 typeCustomer: typeCustomer
@@ -283,17 +373,13 @@
             var newRow = `
                 <tr>
                     <td>${billItem.productName}</td>
-                    <td>${billItem.size}</td>
-                    <td>${billItem.color}</td>
                     <td>${billItem.quantity}</td>
-                    <td>${billItem.unit}</td>
-                    <td>${billItem.discount}</td>
+                    <td>${billItem.price}</td>
                     <td>${billItem.totalPrice.toFixed(2)}</td>
-                    <td>${billItem.totalPriceAfterDiscount.toFixed(2)}</td>
-                    <td>${billItem.typeCustomer}</td>
                 </tr>
             `;
             $('#billItems').append(newRow);
+
 
             updateTotalAmount();
             $('#productDetails').hide();
@@ -301,9 +387,31 @@
             $('#customerList').empty();
             $('#searchProduct').val('');
             $('#phone_customer').val('');
+            $('#type_customer').val(typeCustomer);
+            $('#usercreate').val(userName);
+            // $('#discount_bill').val(discount);
+
+        }
+
+        function updateAfterDiscount() {
+            const discount = parseFloat(document.getElementById('discount_bill').value) || 0;
+            const originalTotal = parseFloat(document.getElementById('total_bill').value) || 0;
+            const afterDiscount = originalTotal - discount;
+            document.getElementById('afterdiscount').value = afterDiscount.toFixed(2);
         }
 
         $(document).ready(function () {
+            updateDateNow();
+            $('#quantity').on('input', function () {
+                var quantity = parseInt($(this).val());
+                if (selectedProduct && quantity > selectedProduct.inventory) {
+                    $(this).addClass('is-invalid');
+                    $(this).attr('title', 'Số lượng nhập vào vượt quá tồn kho (' + selectedProduct.inventory + ')');
+                } else {
+                    $(this).removeClass('is-invalid');
+                    $(this).removeAttr('title');
+                }
+            });
             $('#searchProduct').on('input', function () {
                 var query = $(this).val();
                 if (query) {
@@ -361,6 +469,9 @@
             $('#addToBill').on('click', addToBill);
 
             $('#amountPaid').on('input', updateChangeAmount);
+            $('#discount_bill').on('input', function () {
+                updateTotalAmount();
+            });
 
             $('#checkout').on('click', function () {
                 var billData = {
