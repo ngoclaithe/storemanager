@@ -94,7 +94,7 @@
             </div>
         </div>
     </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
     <script src="../../static/script/script.js"></script>
@@ -111,33 +111,85 @@
             document.getElementById('revenue-today').innerText = data.revenue_today;
             document.getElementById('sold-product').innerText = data.sold_product;
             document.getElementById('revenue-yesterday').innerText = data.revenue_yesterday;
-            renderChart(data.sales_over_time);
+
         }
+        async function fetchSalesDataWeek() {
+            const response = await fetch('/sales_week');
+            const salesData = await response.json();
 
+            renderChart(salesData);
+        }
         function renderChart(salesData) {
-            const ctx = document.getElementById('salesChart').getContext('2d');
+    const ctx = document.getElementById('salesChart').getContext('2d');
 
-            const salesChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: salesData.dates,
-                    datasets: [{
-                        label: 'Doanh thu',
-                        data: salesData.revenue,
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1
-                    }]
+    const labels = salesData.map(item => item.date);
+    const totalQuantitySold = salesData.map(item => item.total_quantity_sold);
+    const totalProductsSold = salesData.map(item => item.total_products_sold);
+
+    const maxQuantity = Math.max(...totalQuantitySold);
+    const maxProduct = Math.max(...totalProductsSold);
+
+    const salesChart = new Chart(ctx, {
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    type: 'line',
+                    label: 'Tổng số lượng bán',
+                    data: totalQuantitySold,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    fill: false,
+                    tension: 0.1,
+                    yAxisID: 'y1'
                 },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+                {
+                    type: 'bar',
+                    label: 'Số loại sản phẩm bán',
+                    data: totalProductsSold,
+                    backgroundColor: 'rgba(255, 159, 64, 0.6)',
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    yAxisID: 'y2'
+                }
+            ]
+        },
+        options: {
+            scales: {
+                y1: {
+                    type: 'linear',
+                    position: 'left',
+                    min: 0,
+                    max: maxQuantity, 
+                    title: {
+                        display: true,
+                        text: 'Tổng số lượng bán'
+                    }
+                },
+                y2: {
+                    type: 'linear',
+                    position: 'right',
+                    min: 0,
+                    max: maxProduct, 
+                    title: {
+                        display: true,
+                        text: 'Số loại sản phẩm bán'
+                    },
+                    grid: {
+                        drawOnChartArea: false 
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Ngày'
                     }
                 }
-            });
+            }
         }
+    });
+}
+
+
 
         document.getElementById('toggleSidebar').addEventListener('click', function () {
             const sidebar = document.getElementById('sidebar');
@@ -148,6 +200,7 @@
 
         window.onload = function () {
             fetchSalesData();
+            fetchSalesDataWeek();
             renderMap();
         };
 
@@ -161,6 +214,7 @@
         }
 
     </script>
+
     <script src="../../static/script/script.js"></script>
 </body>
 

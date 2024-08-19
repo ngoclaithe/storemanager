@@ -205,3 +205,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     showPage(currentPage);
 });
+

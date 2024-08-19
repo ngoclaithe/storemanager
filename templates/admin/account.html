@@ -66,20 +66,13 @@
 
 <body>
     <nav class="navbar navbar-custom navbar-expand-lg">
-        <a class="navbar-brand" href="#">
+        <a class="navbar-brand" href="#" id="navbarBrand">
             <img src="../../static/img/logo_login.png" alt="Logo" style="width: 40px; margin-right: 10px;">
             Thanh Hải Store
             <img src="../../static/img/more.png" alt="More" id="toggleSidebar"
                 style="width: 40px; margin-right: 10px; cursor: pointer;">
         </a>
         <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="#">
-                    <div id="notification-icon">
-                        <img src="../../static/img/notification.png" alt="Thông báo" class="notification-icon">
-                    </div>
-                </a>
-            </li>
             <li class="nav-item">
                 <a class="nav-link" href="/account">
                     <img src="../../static/img/user.png" alt="Tài khoản" class="account-icon">
@@ -123,6 +116,15 @@
         </div>
     </div>
     <script>
+        var userType = "{{user_type}}";
+        document.getElementById("navbarBrand").addEventListener("click", function (event) {
+            event.preventDefault();
+            if (userType === "admin") {
+                window.location.href = '/overview';
+            } else {
+                window.location.href = '/staff_timekeeping';
+            }
+        });
         document.getElementById("change-password-form").addEventListener("submit", function (event) {
             event.preventDefault();
             var formData = new FormData(this);
@@ -150,7 +152,7 @@
             })
                 .then(response => {
                     if (response.status === 200) {
-                        alert("Đăng xuất thành công");
+                        // alert("Đăng xuất thành công");
                         window.location.href = '/login_page';
                     } else {
                         alert("Đăng xuất không thành công");
@@ -166,8 +168,33 @@
             sidebar.classList.toggle('collapsed');
             content.classList.toggle('collapsed');
         });
+        function handleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('content');
+            const toggleSidebar = document.getElementById('toggleSidebar');
+
+            function toggleSidebarVisibility(event) {
+                if (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                sidebar.classList.toggle('collapsed');
+                content.classList.toggle('collapsed');
+            }
+
+            if (userType === "admin") {
+                toggleSidebar.style.display = 'none';
+                sidebar.style.display = 'block';
+
+                toggleSidebar.addEventListener('click', toggleSidebarVisibility);
+            } else {
+                toggleSidebar.style.display = 'none';
+                sidebar.style.display = 'none';
+            }
+        }
+
+        handleSidebar();
     </script>
-    <script src="../../static/script/script.js"></script>
 </body>
 
 </html>

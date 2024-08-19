@@ -12,8 +12,8 @@
 
 <body>
     <nav class="navbar navbar-custom navbar-expand-lg">
-        <a class="navbar-brand" href="#">
-            <img src="../../static/img/logo_login.png" alt="Logo" style="width: 40px; margin-right: 10px;">
+        <a class="navbar-brand" >
+            <img src="../../static/img/logo_login.png" alt="Logo" style="width: 40px; margin-right: 10px;" id="home" href="#">
             Thanh Hải Store
             <img src="../../static/img/more.png" alt="More" id="toggleSidebar"
                 style="width: 40px; margin-right: 10px; cursor: pointer;">
@@ -34,12 +34,13 @@
         </ul>
     </nav>
     <div class="sidebar" id="sidebar">
-        <a href="/overview"><i class="fas fa-tachometer-alt"></i> Tổng quan</a>
-        <a href="/product"><i class="fas fa-box-open"></i> Hàng hóa</a>
-        <a href="/transaction"><i class="fas fa-exchange-alt"></i> Giao dịch</a>
+        <a href="/staff_timekeeping" id="timekeeping-link" style="display: none;"><i class="fas fa-clock"></i> Chấm công</a>
+        <a href="/overview" id="overview-link"><i class="fas fa-tachometer-alt"></i> Tổng quan</a>
+        <a href="/product" id="product-link"><i class="fas fa-box-open"></i> Hàng hóa</a>
+        <a href="/transaction" id="transaction-link"><i class="fas fa-exchange-alt"></i> Giao dịch</a>
         <a href="/treasury" class="active"><i class="fas fa-wallet"></i> Sổ quỹ</a>
-        <a href="/report"><i class="fas fa-chart-line"></i> Báo cáo</a>
-        <a href="/staff"><i class="fas fa-users"></i> Nhân viên</a>
+        <a href="/report" id="report-link"><i class="fas fa-chart-line"></i> Báo cáo</a>
+        <a href="/staff" id="staff-link"><i class="fas fa-users"></i> Nhân viên</a>
     </div>
     <div id="contextMenu" class="context-menu" style="display: none;">
         <ul>
@@ -220,6 +221,32 @@
                 </tbody>
             </table>
         </div>
+        <script>
+            var userType = "{{user_type}}";  
+    
+            document.addEventListener('DOMContentLoaded', function() {
+                const homeLink = document.getElementById('home');
+                const sidebarLinks = {
+                    'overview': document.getElementById('overview-link'),
+                    'product': document.getElementById('product-link'),
+                    'transaction': document.getElementById('transaction-link'),
+                    'report': document.getElementById('report-link'),
+                    'staff': document.getElementById('staff-link'),
+                    'notification-icon': document.getElementById('notification-icon')
+                };
+    
+                if (userType === 'admin') {
+                    homeLink.href = '/overview';
+
+                } else if (userType === 'thuquy') {
+                    homeLink.href = '/staff_timekeeping';
+                    for (let link in sidebarLinks) {
+                        sidebarLinks[link].style.display = 'none';
+                        document.getElementById('timekeeping-link').style.display = 'block';
+                    }
+                }
+            });
+        </script>
 
         <script src="../../static/script/treasury.js"></script>
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

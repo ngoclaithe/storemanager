@@ -72,14 +72,14 @@ def login():
         password = md5_hash(request.form["password"])
         user = Register.query.filter_by(email=email, password=password).first()
         print(email)
-        print(user.email)
+        print(user.usertype)
 
         if user:
             session["user_id"] = user.id
             session["usertype"] = user.usertype
             if user.usertype == "admin":
                 return redirect(url_for("admin_overview"))
-            elif user.usertype in ["nhanvienkho", "nhanvienbanhang", "nhanvienthuquy"]:
+            elif user.usertype in ["nhanvienkho", "nhanvienbanhang", "thuquy"]:
                 return redirect(url_for("staff_timekeeping"))
         else:
             return "Notok", 400
@@ -281,7 +281,7 @@ def staff_timekeeping():
     if "user_id" in session and session["usertype"] in [
         "nhanvienkho",
         "nhanvienbanhang",
-        "nhanvienthuquy",
+        "thuquy",
     ]:
         user = Register.query.filter_by(id=session["user_id"]).first()
         if user:
@@ -291,6 +291,7 @@ def staff_timekeeping():
                     "staff_timekeeping.html",
                     user_id=staff.id_staff,
                     user_name=user.user,
+                    user_type=user.usertype
                 )
             else:
                 return "Không tìm thấy thông tin nhân viên"
@@ -402,12 +403,12 @@ def get_bills():
 
 @app.route("/transaction", methods=["GET"])
 def admin_transaction():
-    if "user_id" in session and session["usertype"] == "admin":
+    if "user_id" in session and session["usertype"] in ["admin","thuquy"]:
         user = Register.query.filter_by(id=session["user_id"]).first()
         if user:
             bills = get_bills()
             return render_template(
-                "admin/transaction.html", user_name=user.user, bills=bills
+                "admin/transaction.html", user_name=user.user, bills=bills, user_type=user.usertype
             )
         else:
             return "Không tìm thấy thông tin người dùng"
@@ -587,7 +588,7 @@ def cacul_treasury():
 
 @app.route("/treasury", methods=["GET"])
 def admin_treasury():
-    if "user_id" in session and session["usertype"] == "admin":
+    if "user_id" in session and session["usertype"] in ["admin", "thuquy"]:
         user = Register.query.filter_by(id=session["user_id"]).first()
         if user:
             treasurys = get_treasurys()
@@ -596,6 +597,7 @@ def admin_treasury():
             )
             return render_template(
                 "admin/treasury.html",
+                user_type=user.usertype,
                 user_name=user.user,
                 treasurys=treasurys,
                 opening_balance=opening_balance,
@@ -611,7 +613,7 @@ def admin_treasury():
 
 @app.route("/account", methods=["GET"])
 def admin_account():
-    if "user_id" in session and session["usertype"] == "admin":
+    if "user_id" in session and session["usertype"] in ["admin", "nhanvienbanhang", "nhanvienkho", "thuquy"]:
         user = Register.query.filter_by(id=session["user_id"]).first()
         if user:
             return render_template("admin/account.html", user_name=user.user, user_type=user.usertype, email=user.email)
@@ -635,7 +637,7 @@ def admin_report():
 
 @app.route("/add_bill_import_page")
 def add_bill_import_page():
-    if "user_id" in session and session["usertype"] == "admin":
+    if "user_id" in session and session["usertype"] in ["admin", "nhanvienkho"]:
         user = Register.query.filter_by(id=session["user_id"]).first()
         if user:
             return render_template("admin/add_bill_import.html", user_name=user.user)
@@ -645,7 +647,7 @@ def add_bill_import_page():
         return redirect(url_for("login"))
 @app.route("/add_bill_export_page")
 def add_bill_export_page():
-    if "user_id" in session and session["usertype"] == "admin":
+    if "user_id" in session and session["usertype"] in ["admin", "nhanvienbanhang"]:
         user = Register.query.filter_by(id=session["user_id"]).first()
         if user:
             return render_template("admin/add_bill_export.html", user_name=user.user)
@@ -773,6 +775,41 @@ def search_supplier():
     ]
     print(supplier_list)
     return jsonify(supplier_list)
+@app.route("/sales_week")
+def sales_week():
+    today = date.today()
+    start_of_week = today - timedelta(days=6)  
+    sales_week_data = []
+    
+    for i in range(7):
+        day = start_of_week + timedelta(days=i)
+
+        sales_day = (
+            db.session.query(func.sum(Bill.quantity))
+            .filter(func.date(Bill.date) == day)
+            .filter(Bill.type_transaction == "Bán Hàng")
+            .scalar()
+        )
+
+        sold_product_day = (
+            db.session.query(func.count(func.distinct(Bill.id_product)))
+            .filter(func.date(Bill.date) == day)
+            .filter(Bill.type_transaction == "Bán Hàng")
+            .scalar()
+        )
+        
+        sales_day = sales_day if sales_day else 0
+        sold_product_day = sold_product_day if sold_product_day else 0
+
+        sales_week_data.append(
+            {
+                "date": day.strftime("%Y-%m-%d"),
+                "total_quantity_sold": sales_day,
+                "total_products_sold": sold_product_day,
+            }
+        )
+    
+    return jsonify(sales_week_data)
 @app.route("/sales_today")
 def sales_today():
     today = date.today()
