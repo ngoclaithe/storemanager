@@ -6,8 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Giao dịch</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="../../static/css/transaction.css">
+    <link rel="stylesheet" href="../../static/css/noti.css">
 </head>
 
 <body>
@@ -33,10 +34,11 @@
             </li>
         </ul>
     </nav>
-    <div id="notification-popup" class="notification-popup" style="display: none;">
-        <table class="table">
+    <div id="notification-popup" style="display: none;">
+        <table id="notification-table">
             <thead>
                 <tr>
+                    <th></th>
                     <th></th>
                     <th></th>
                 </tr>
@@ -59,11 +61,6 @@
         <div class="card-container">
             <div class="main-content">
                 <h1>Quản lý giao dịch</h1>
-                <div class="btn-container">
-                    <button id="addBillExport" class="btn btn-primary mb-3" onclick="openNewTabExport()">Bán Hàng</button>
-                    <button id="addBillImport" class="btn btn-primary mb-3" onclick="openNewTabImport()">Nhập Hàng</button>
-                </div>
-
                 <div class="table-responsive">
                     <table id="productTable">
                         <thead>
@@ -107,6 +104,14 @@
             </div>
         </div>
     </div>
+    <button id="addBillExport" class="icon-btn" onclick="openNewTabExport()">
+        <i class="fas fa-file-export"></i>
+        <span class="tooltip">Bán hàng</span>
+    </button>
+    <button id="addBillImport" class="icon-btn" onclick="openNewTabImport()">
+        <i class="fas fa-file-import"></i>
+        <span class="tooltip">Nhập hàng</span>
+    </button>
     <script src="../../static/script/transaction.js"></script>
     <script src="../../static/script/script.js"></script>
 </body>

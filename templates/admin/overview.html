@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="../../static/css/overview.css">
+    <link rel="stylesheet" href="../../static/css/noti.css">
 
 </head>
 
@@ -34,10 +35,11 @@
             </li>
         </ul>
     </nav>
-    <div id="notification-popup" class="notification-popup" style="display: none;">
-        <table class="table">
+    <div id="notification-popup" style="display: none;">
+        <table id="notification-table">
             <thead>
                 <tr>
+                    <th></th>
                     <th></th>
                     <th></th>
                 </tr>
@@ -88,134 +90,255 @@
                 </div>
             </div>
 
-            <div class="map-container">
-                <h2>Lượng truy cập</h2>
-                <div id="worldMap" style="height: 400px;"></div>
+            <div id="pie-chart-container">
+                <h1>Tỉ trọng nhóm hàng</h1>
+
+                <div class="chart-section-container">
+                    <div class="chart-section">
+                        <h2>Tuần này</h2>
+                        <canvas id="currentWeekChart"></canvas>
+                    </div>
+
+                    <div class="chart-section">
+                        <h2>Tuần trước</h2>
+                        <canvas id="lastWeekChart"></canvas>
+                    </div>
+                </div>
             </div>
+
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
-    <script src="../../static/script/script.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css" />
-
+    <script src="../../static/script/script.js"></script>
     <script>
-        var userName = "{{ user_name }}";
+        const userName = "{{ user_name }}";
 
-        async function fetchSalesData() {
-            const response = await fetch('/sales_today');
-            const data = await response.json();
+        const fetchData = async (url) => {
+            const response = await fetch(url);
+            return response.json();
+        };
 
+        const updateSalesData = async () => {
+            const data = await fetchData('/sales_today');
             document.getElementById('sold-today').innerText = data.sold_today;
             document.getElementById('revenue-today').innerText = data.revenue_today;
             document.getElementById('sold-product').innerText = data.sold_product;
             document.getElementById('revenue-yesterday').innerText = data.revenue_yesterday;
+        };
 
-        }
-        async function fetchSalesDataWeek() {
-            const response = await fetch('/sales_week');
-            const salesData = await response.json();
-
+        const updateSalesChart = async () => {
+            const salesData = await fetchData('/sales_week');
             renderChart(salesData);
-        }
-        function renderChart(salesData) {
-    const ctx = document.getElementById('salesChart').getContext('2d');
+        };
 
-    const labels = salesData.map(item => item.date);
-    const totalQuantitySold = salesData.map(item => item.total_quantity_sold);
-    const totalProductsSold = salesData.map(item => item.total_products_sold);
+        const renderChart = (salesData) => {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            const labels = salesData.map(item => item.date);
+            const totalQuantitySold = salesData.map(item => item.total_quantity_sold);
+            const totalProductsSold = salesData.map(item => item.total_products_sold);
+            const maxQuantity = Math.max(...totalQuantitySold);
+            const maxProduct = Math.max(...totalProductsSold);
 
-    const maxQuantity = Math.max(...totalQuantitySold);
-    const maxProduct = Math.max(...totalProductsSold);
-
-    const salesChart = new Chart(ctx, {
-        data: {
-            labels: labels,
-            datasets: [
-                {
-                    type: 'line',
-                    label: 'Tổng số lượng bán',
-                    data: totalQuantitySold,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    fill: false,
-                    tension: 0.1,
-                    yAxisID: 'y1'
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            type: 'line',
+                            label: 'Tổng số lượng bán',
+                            data: totalQuantitySold,
+                            backgroundColor: 'rgba(75, 192, 192, 0.3)', 
+                            borderColor: 'rgba(75, 192, 192, 1)', 
+                            borderWidth: 2, 
+                            pointBackgroundColor: 'rgba(75, 192, 192, 1)', 
+                            pointBorderColor: '#fff', 
+                            pointBorderWidth: 1, 
+                            pointRadius: 5, 
+                            fill: true,
+                            tension: 0.8, 
+                        },
+                        {
+                            type: 'bar',
+                            label: 'Số loại sản phẩm bán',
+                            data: totalProductsSold,
+                            backgroundColor: 'rgba(0, 255, 0, 0.6)',
+                            borderColor: 'rgba(0, 255, 0, 1)', 
+                            borderWidth: 1, 
+                            yAxisID: 'y2'
+                        }
+                    ]
                 },
-                {
-                    type: 'bar',
-                    label: 'Số loại sản phẩm bán',
-                    data: totalProductsSold,
-                    backgroundColor: 'rgba(255, 159, 64, 0.6)',
-                    borderColor: 'rgba(255, 159, 64, 1)',
-                    yAxisID: 'y2'
-                }
-            ]
-        },
-        options: {
-            scales: {
-                y1: {
-                    type: 'linear',
-                    position: 'left',
-                    min: 0,
-                    max: maxQuantity, 
-                    title: {
-                        display: true,
-                        text: 'Tổng số lượng bán'
-                    }
-                },
-                y2: {
-                    type: 'linear',
-                    position: 'right',
-                    min: 0,
-                    max: maxProduct, 
-                    title: {
-                        display: true,
-                        text: 'Số loại sản phẩm bán'
+                options: {
+                    scales: {
+                        y1: {
+                            type: 'linear',
+                            position: 'left',
+                            min: 0,
+                            max: maxQuantity,
+                            title: {
+                                display: true,
+                                text: 'Tổng số lượng bán'
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)', 
+                                borderColor: 'rgba(0, 0, 0, 0.1)' 
+                            }
+                        },
+                        y2: {
+                            type: 'linear',
+                            position: 'right',
+                            min: 0,
+                            max: maxProduct,
+                            title: {
+                                display: true,
+                                text: 'Số loại sản phẩm bán'
+                            },
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Ngày'
+                            },
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        }
                     },
-                    grid: {
-                        drawOnChartArea: false 
-                    }
-                },
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Ngày'
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += `${context.raw}`;
+                                    return label;
+                                }
+                            }
+                        },
+                        legend: {
+                            labels: {
+                                font: {
+                                    size: 14 
+                                }
+                            }
+                        },
+                        datalabels: {
+                            color: '#fff',
+                            backgroundColor: '#000',
+                            borderRadius: 4,
+                            anchor: 'end',
+                            align: 'top',
+                            formatter: (value) => {
+                                return value;
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 1000, 
+                        easing: 'easeInOutQuad' 
+                    },
+                    layout: {
+                        padding: {
+                            left: 10,
+                            right: 10,
+                            top: 10,
+                            bottom: 10
+                        }
                     }
                 }
-            }
-        }
-    });
-}
+            });
+        };
 
+        const renderPieChart = (data, chartId, label) => {
+            const ctx = document.getElementById(chartId).getContext('2d');
+            const labels = Object.keys(data);
+            const quantities = labels.map(label => data[label].quantity);
+            const percentages = labels.map(label => data[label].percentage.toFixed(2));
 
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: label,
+                        data: percentages,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.6)',
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(255, 206, 86, 0.6)',
+                            'rgba(75, 192, 192, 0.6)',
+                            'rgba(153, 102, 255, 0.6)',
+                            'rgba(255, 159, 64, 0.6)'
+                        ],
+                        borderColor: 'rgba(0, 0, 0, 0.1)',
+                        borderWidth: 1,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += `${context.raw}% (${quantities[context.dataIndex]} sản phẩm)`;
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true
+                    }
+                },
+                plugins: [{
+                    beforeDraw: (chart) => {
+                        chart.ctx.save();
+                        chart.ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+                        chart.ctx.shadowBlur = 10;
+                        chart.ctx.shadowOffsetX = 0;
+                        chart.ctx.shadowOffsetY = 5;
+                    },
+                    afterDraw: (chart) => {
+                        chart.ctx.restore();
+                    }
+                }]
+            });
+        };
 
-        document.getElementById('toggleSidebar').addEventListener('click', function () {
+        const updateGroupProductData = async () => {
+            const data = await fetchData('/best_selling_group_products');
+            renderPieChart(data.current_week, 'currentWeekChart', 'Tuần hiện tại');
+            renderPieChart(data.last_week, 'lastWeekChart', 'Tuần trước');
+        };
+
+        document.getElementById('toggleSidebar').addEventListener('click', () => {
             const sidebar = document.getElementById('sidebar');
             const content = document.getElementById('content');
             sidebar.classList.toggle('collapsed');
             content.classList.toggle('collapsed');
         });
 
-        window.onload = function () {
-            fetchSalesData();
-            fetchSalesDataWeek();
-            renderMap();
+        window.onload = () => {
+            updateSalesData();
+            updateSalesChart();
+            updateGroupProductData();
         };
-
-        function renderMap() {
-            const map = L.map('worldMap').setView([20, 0], 2);
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 18,
-                attribution: '© OpenStreetMap'
-            }).addTo(map);
-        }
-
     </script>
-
-    <script src="../../static/script/script.js"></script>
 </body>
 
 </html>

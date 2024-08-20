@@ -165,13 +165,91 @@ body {
     margin-bottom: 10px;
 }
 
-.map-container {
-    margin-top: 20px;
+/* #pie-chart-container {
+    position:absolute;
     background-color: white;
+    margin-top: 40px;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    flex: 2;
+    min-width: 500px;
+} */
+/* #pie-chart-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    margin-top: 40px;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    flex: 2;
+    min-width: 500px;
 }
+.chart-section {
+    width: 100%;
+    margin-bottom: 40px;
+}
+
+.chart-section h2 {
+    margin-left: 180px;
+    margin-bottom: 20px;
+    font-size: 1.5em;
+    color: #333;
+}
+#currentWeekChart, #lastWeekChart {
+    flex: 1;
+    max-width: 600px;
+    max-height: 600px;
+    margin: 0 10px;
+
+} */
+#pie-chart-container {
+    display: flex;
+    flex-direction: column; 
+    align-items: center; 
+    background-color: white;
+    padding: 2rem;
+    border-radius: 0.625rem;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1); 
+    margin: 2rem 1rem; 
+    width: 100%;
+    max-width: 100%;
+}
+
+#pie-chart-container h1 {
+    margin-bottom: 2rem; 
+    font-size: 2rem;
+    color: #333;
+}
+
+.chart-section-container {
+    display: flex;
+    justify-content: space-between; 
+    width: 100%;
+}
+
+.chart-section {
+    flex: 1;
+    text-align: center;
+    margin: 0 1rem; 
+    max-width: 45%; 
+}
+
+.chart-section h2 {
+    margin-bottom: 1.25rem;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+#currentWeekChart, #lastWeekChart {
+    width: 100%;
+    height: auto;
+    margin: 0 auto;
+    display: block;
+}
+
 
 @media (max-width: 992px) {
     .content {
@@ -196,41 +274,4 @@ body {
     .sidebar.collapsed ~ .content {
         margin-left: 0;
     }
-}
-.notification-popup {
-    position: absolute;
-    top: 60px; 
-    right: 20px;
-    background-color: #fff;
-    border-radius: 10px; 
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
-    padding: 20px;
-    width: 300px; 
-    z-index: 1000;
-}
-
-.notification-popup .table {
-    margin-bottom: 0; 
-    border-collapse: collapse;
-    border-spacing: 0; 
-    width: 100%; 
-}
-
-.notification-popup .table thead {
-    display: none;
-}
-
-.notification-popup .table, 
-.notification-popup .table td {
-    border: none; 
-    padding: 10px;
-    vertical-align: middle;
-}
-
-.notification-popup .table tbody tr:hover {
-    background-color: #f1f1f1; 
-}
-
-.notification-popup .table tbody tr {
-    border-bottom: none; 
 }

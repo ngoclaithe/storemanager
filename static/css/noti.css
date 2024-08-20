@@ -1,0 +1,45 @@
+#notification-popup {
+    position: absolute;
+    top: 60px; 
+    right: 20px;
+    background-color: #fff;
+    border-radius: 10px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+    padding: 0px;
+    width: 500px; 
+    z-index: 1000;
+}
+
+#notification-popup #notification-table {
+    margin-bottom: 0; 
+    border-collapse: collapse;
+    border-spacing: 0; 
+    width: 100%; 
+    background-color: transparent; 
+}
+
+#notification-popup #notification-table thead {
+    display: none;
+}
+
+#notification-popup #notification-table td {
+    border: none; 
+    padding: 10px;
+    vertical-align: middle;
+    background-color: transparent; 
+    color: #333; 
+}
+
+#notification-popup #notification-table tbody tr:hover {
+    background-color: transparent; 
+}
+
+#notification-popup #notification-table tbody tr {
+    border-bottom: none;
+}
+
+#notification-popup .overview-img {
+    width: 50px;    
+    height: auto;
+    border-radius: 10px;
+}

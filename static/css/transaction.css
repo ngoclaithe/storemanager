@@ -192,46 +192,85 @@ tr:hover td {
     background-color: #dc3545;
 }
 
-#addRegisterBtn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    font-size: 24px;
-    cursor: pointer;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-#addRegisterBtn:hover {
-    background-color: #ee4e0f;
-}
-
-#exportExcelBtn {
+#addBillExport {
     position: fixed;
     bottom: 80px;
-    right: 20px;
+    right: 20px; 
     width: 50px;
     height: 50px;
     background-color: #28a745;
     color: white;
     border: none;
-    border-radius: 50%;
+    padding: 10px 20px;
+    font-size: 18px;
+    border-radius: 5px;
     cursor: pointer;
-    background-image: url('../../static/img/icons8-excel-48.png');
-    background-size: 60%;
-    background-position: center;
-    background-repeat: no-repeat;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: inline-flex;
+    align-items: center;
+    transition: background-color 0.3s ease;
 }
 
-#exportExcelBtn:hover {
-    background-color: #218838;
+#addBillImport {
+    position: fixed;
+    bottom: 20px;
+    right: 20px; 
+    width: 50px;
+    height: 50px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    transition: background-color 0.3s ease;
 }
+
+.icon-btn:hover {
+    background-color: #0056b3; 
+}
+
+.icon-btn i {
+    margin-right: 8px;
+}
+
+.tooltip {
+    visibility: hidden;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 5px;
+    border-radius: 4px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%; 
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent; 
+}
+
+.icon-btn:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+
 .modal {
     display: none;
     position: fixed;
@@ -364,7 +403,7 @@ tr:hover td {
 }
 
 .table-responsive {
-    max-height: 500px;
+    max-height: fit-content;
     overflow-y: auto;
     overflow-x: auto;
     border: 1px solid #ddd;
@@ -394,41 +433,4 @@ tr:hover td {
     display: flex;
     gap: 10px; 
     margin-top: 20px; 
-}
-.notification-popup {
-    position: absolute;
-    top: 60px; 
-    right: 20px;
-    background-color: #fff;
-    border-radius: 10px; 
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
-    padding: 20px;
-    width: 300px; 
-    z-index: 1000;
-}
-
-.notification-popup .table {
-    margin-bottom: 0; 
-    border-collapse: collapse;
-    border-spacing: 0; 
-    width: 100%; 
-}
-
-.notification-popup .table thead {
-    display: none;
-}
-
-.notification-popup .table, 
-.notification-popup .table td {
-    border: none; 
-    padding: 10px;
-    vertical-align: middle;
-}
-
-.notification-popup .table tbody tr:hover {
-    background-color: #f1f1f1; 
-}
-
-.notification-popup .table tbody tr {
-    border-bottom: none; 
 }

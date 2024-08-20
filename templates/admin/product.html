@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="../../static/css/product.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="../../static/css/noti.css">
 </head>
 
 <body>
@@ -33,10 +34,11 @@
             </li>
         </ul>
     </nav>
-    <div id="notification-popup" class="notification-popup" style="display: none;">
-        <table class="table">
+    <div id="notification-popup" style="display: none;">
+        <table id="notification-table">
             <thead>
                 <tr>
+                    <th></th>
                     <th></th>
                     <th></th>
                 </tr>
@@ -116,8 +118,8 @@
         </div>
     </div>
 
-    <button id="addRegisterBtn">+</button>
-    <button id="exportExcelBtn"></button>
+    <button id="addRegisterBtn" class="icon-btn">+<span class="tooltip">Thêm sản phẩm</span></button>
+    <button id="exportExcelBtn" class="icon-btn">        <span class="tooltip">Xuất file</span></button>
 
     <div id="updateModal" class="modal">
         <div class="modal-content">

@@ -109,12 +109,12 @@ body {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    height: fit-content;
 }
 
 .main-content {
     display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
+    flex-direction: column;
 }
 
 #realtime-data {
@@ -206,6 +206,7 @@ tr:hover td {
     font-size: 24px;
     cursor: pointer;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+    z-index: 999;
 }
 
 #addRegisterBtn:hover {
@@ -232,6 +233,39 @@ tr:hover td {
 
 #exportExcelBtn:hover {
     background-color: #218838;
+}
+.tooltip {
+    visibility: hidden;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 5px;
+    border-radius: 4px;
+    position: absolute;
+    z-index: 1000;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%; 
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent; 
+}
+
+.icon-btn:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
 }
 .modal {
     display: none;
@@ -365,7 +399,7 @@ tr:hover td {
 }
 
 .table-responsive {
-    max-height: 500px;
+    max-height: fit-content;
     overflow-y: auto;
     overflow-x: auto;
     border: 1px solid #ddd;
@@ -390,41 +424,4 @@ tr:hover td {
 
 .table-pagination button:hover {
     background-color: #d45407;
-}
-.notification-popup {
-    position: absolute;
-    top: 60px; 
-    right: 20px;
-    background-color: #fff;
-    border-radius: 10px; 
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
-    padding: 20px;
-    width: 300px; 
-    z-index: 1000;
-}
-
-.notification-popup .table {
-    margin-bottom: 0; 
-    border-collapse: collapse;
-    border-spacing: 0; 
-    width: 100%; 
-}
-
-.notification-popup .table thead {
-    display: none;
-}
-
-.notification-popup .table, 
-.notification-popup .table td {
-    border: none; 
-    padding: 10px;
-    vertical-align: middle;
-}
-
-.notification-popup .table tbody tr:hover {
-    background-color: #f1f1f1; 
-}
-
-.notification-popup .table tbody tr {
-    border-bottom: none; 
 }

@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    const rowsPerPage = 5;
+    const rowsPerPage = 10;
     const table = document.getElementById('productTable');
     const rows = table.querySelectorAll('tbody tr');
     const totalRows = rows.length;

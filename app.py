@@ -873,6 +873,118 @@ def sales_today():
         }
     )
 
+@app.route("/best_selling_group_products")
+def best_selling_group_products():
+    today = date.today()
+    start_of_current_week = today - timedelta(days=today.weekday())
+    start_of_last_week = start_of_current_week - timedelta(days=7)
+
+    group_product_mapping = {
+        'aocontrai': 'áo bé trai',
+        'aocongai': 'áo bé gái',
+        'quancontrai': 'quần bé trai',
+        'quancongai': 'quần bé gái',
+        'vay': 'váy',
+        'khac': 'khác'
+    }
+
+    def get_sales_data(start_date, end_date):
+
+        sales_data = db.session.query(
+            Product.groupproduct,
+            db.func.sum(Bill.quantity).label('total_quantity')
+        ).join(Bill, Product.id_product == Bill.id_product
+        ).filter(
+            Bill.date >= start_date,
+            Bill.date < end_date
+        ).group_by(Product.groupproduct).all()
+
+
+        sales_dict = {name: {"quantity": 0, "percentage": 0} for name in group_product_mapping.values()}
+        total_sales = sum(total_quantity for _, total_quantity in sales_data)
+
+        for group, total_quantity in sales_data:
+            if group in group_product_mapping:
+                group_name = group_product_mapping[group]
+                sales_dict[group_name]["quantity"] = total_quantity
+                if total_sales > 0:
+                    sales_dict[group_name]["percentage"] = (total_quantity / total_sales) * 100
+
+        return sales_dict
+
+    current_week_sales = get_sales_data(start_of_current_week, start_of_current_week + timedelta(days=7))
+    last_week_sales = get_sales_data(start_of_last_week, start_of_last_week + timedelta(days=7))
+
+    result = {
+        "current_week": current_week_sales,
+        "last_week": last_week_sales
+    }
+
+    return jsonify(result)
+
+@app.route("/compare_sale_week")
+def compare_sale_week():
+    today = date.today()
+    start_of_current_week = today - timedelta(days=today.weekday())
+    start_of_last_week = start_of_current_week - timedelta(days=7)
+    def get_sales_data(start_date):
+        sales_data = []
+        for i in range(7):
+            day = start_date + timedelta(days=i)
+
+            sales_day = (
+                db.session.query(func.sum(Bill.quantity))
+                .filter(func.date(Bill.date) == day)
+                .filter(Bill.type_transaction == "Bán Hàng")
+                .scalar()
+            )
+
+            sold_product_day = (
+                db.session.query(func.count(func.distinct(Bill.id_product)))
+                .filter(func.date(Bill.date) == day)
+                .filter(Bill.type_transaction == "Bán Hàng")
+                .scalar()
+            )
+            
+            sales_day = sales_day if sales_day else 0
+            sold_product_day = sold_product_day if sold_product_day else 0
+
+            sales_data.append(
+                {
+                    "date": day.strftime("%Y-%m-%d"),
+                    "total_quantity_sold": sales_day,
+                    "total_products_sold": sold_product_day,
+                }
+            )
+        return sales_data
+
+    current_week_data = get_sales_data(start_of_current_week)
+    last_week_data = get_sales_data(start_of_last_week)
+
+    def calculate_totals(week_data):
+        total_quantity = sum(day["total_quantity_sold"] for day in week_data)
+        total_products = sum(day["total_products_sold"] for day in week_data)
+        return total_quantity, total_products
+
+    current_week_totals = calculate_totals(current_week_data)
+    last_week_totals = calculate_totals(last_week_data)
+
+    result = {
+        "current_week": {
+            "dates": [day["date"] for day in current_week_data],
+            "total_quantity_sold": current_week_totals[0],
+            "total_products_sold": current_week_totals[1],
+            "weekly_data": current_week_data
+        },
+        "last_week": {
+            "dates": [day["date"] for day in last_week_data],
+            "total_quantity_sold": last_week_totals[0],
+            "total_products_sold": last_week_totals[1],
+            "weekly_data": last_week_data
+        }
+    }
+
+    return jsonify(result)
 
 
 @app.route("/add_treasury", methods=["POST"])
@@ -1317,6 +1429,11 @@ def get_notifications():
         product = Product.query.filter_by(id_product=bill.id_product).first()
         if product:
             product_name = product.nameproduct
+            path_image = (
+                url_for("static", filename="images/" + product.path_image)
+                if product.path_image
+                else None
+            )
         else:
             product_name = "Sản phẩm không tìm thấy"
         time_diff = now - bill.date
@@ -1335,11 +1452,10 @@ def get_notifications():
             transaction_description = f"Giao dịch ID {bill.id_product}"
 
         notifications.append({
+            'path_image': path_image,
             'transaction': transaction_description,
             'time': time_str
         })
-    print(notifications)
-
     return jsonify(notifications)
 
 @app.route("/check_db")

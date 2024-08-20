@@ -159,7 +159,7 @@
         </div>
     </div>
     <div class="container right-panel">
-        <h2>Phiếu xem trước hóa đơn</h2>
+        <h2>Phiếu nhập hàng</h2>
         <div class="bill-preview" id="billPreview">
             <table class="table">
                 <thead>
@@ -357,7 +357,7 @@
                     data: JSON.stringify(billData),
                     success: function (response) {
                         alert('Hóa đơn đã được lưu thành công!');
-                        window.location.href = '/transaction';
+                        window.location.href = '/add_bill_import_page';
                     },
                     error: function (xhr, status, error) {
                         console.error(error);
