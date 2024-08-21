@@ -147,7 +147,7 @@ tr:hover td {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #fff; 
+    background-color: #ffffff; 
     padding: 20px;
     border: 1px solid #ccc; 
     border-radius: 10px; 
@@ -161,6 +161,7 @@ tr:hover td {
 
 .modal .modal-content {
     padding: 20px;
+    background-color: #c3f7f7;
 }
 
 .modal input[type="date"],
@@ -178,7 +179,7 @@ tr:hover td {
 .modal input[type="date"]:focus,
 .modal input[type="text"]:focus,
 .modal select:focus {
-    border-color: #007bff; 
+    border-color: #a7caf0; 
     background-color: #fff; 
 }
 
@@ -216,10 +217,10 @@ tr:hover td {
     margin-bottom: 20px; 
 }
 
-.modal label {
+/* .modal label {
     font-weight: bold;
     color: #333;
-}
+} */
 
 
 .form-group-row {
@@ -234,7 +235,7 @@ tr:hover td {
     width: 48%;
 }
 
-.form-group label {
+/* .form-group label {
     flex: 0 0 100px;
     margin-right: 10px;
 }
@@ -242,7 +243,349 @@ tr:hover td {
 .form-group input {
     flex: 1;
     padding: 5px;
+} */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #f8f8f8;
 }
+
+th,
+td {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 10px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+th {
+    background-color: #e56e07;
+    color: white;
+    text-transform: uppercase;
+}
+
+td {
+    background-color: #f2f2f2;
+    color: #333;
+}
+
+tr:nth-child(even) td {
+    background-color: #ebebeb;
+}
+
+tr:hover td {
+    background-color: #d1e0e0;
+    color: #0056b3;
+}
+
+.product-img {
+    width: 50px;
+    height: auto;
+    border-radius: 5px;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 5px;
+}
+
+.action-buttons button {
+    padding: 5px 10px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.action-buttons button:hover {
+    background-color: #0056b3;
+    color: white;
+}
+
+.action-buttons button.edit-btn:hover {
+    background-color: #007bff;
+}
+
+.action-buttons button.delete-btn:hover {
+    background-color: #dc3545;
+}
+
+#addRegisterBtn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+    z-index: 999;
+}
+
+#addRegisterBtn:hover {
+    background-color: #ee4e0f;
+}
+
+#exportExcelBtn {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    background-image: url('../../static/img/icons8-excel-48.png');
+    background-size: 60%;
+    background-position: center;
+    background-repeat: no-repeat;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#exportExcelBtn:hover {
+    background-color: #218838;
+}
+.tooltip {
+    visibility: hidden;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 5px;
+    border-radius: 4px;
+    position: absolute;
+    z-index: 1000;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%; 
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent; 
+}
+
+.icon-btn:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+.modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ffffff; 
+    padding: 20px;
+    border: 1px solid #ccc; 
+    border-radius: 10px; 
+    z-index: 1000;
+    width: 90%;
+    max-width: 1000px;
+    max-height: 80%;
+    overflow-y: auto;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); 
+}
+
+.modal .modal-content {
+    padding: 20px;
+    background-color: #c3f7f7;
+}
+
+.modal input[type="date"],
+.modal input[type="text"],
+.modal select {
+    width: 100%;
+    padding: 10px; 
+    margin: 10px 0; 
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 6px; 
+    background-color: #f9f9f9; 
+}
+
+.modal input[type="date"]:focus,
+.modal input[type="text"]:focus,
+.modal select:focus {
+    border-color: #a7caf0; 
+    background-color: #fff; 
+}
+
+.modal .close {
+    color: #555; 
+    float: right;
+    font-size: 30px; 
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s; 
+}
+
+.modal .close:hover,
+.modal .close:focus {
+    color: #000; 
+}
+
+.modal button[type="submit"] {
+    background-color: #4CAF50;
+    color: #fff;
+    padding: 14px 24px; 
+    border: none;
+    border-radius: 6px; 
+    cursor: pointer;
+    float: right;
+    transition: background-color 0.3s; 
+}
+
+.modal button[type="submit"]:hover {
+    background-color: #45a049; 
+}
+
+.modal h2 {
+    color: #333;
+    margin-bottom: 20px; 
+}
+
+/* .modal label {
+    font-weight: bold;
+    color: #333;
+} */
+
+
+.form-group-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+    width: 48%;
+}
+
+/* .form-group label {
+    flex: 0 0 100px;
+    margin-right: 10px;
+}
+
+.form-group input {
+    flex: 1;
+    padding: 5px;
+} */
+.floating-label {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.input-box {
+    width: 100%;
+    padding: 10px 10px 10px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: none;
+    color: #333;
+}
+
+.floating-label label {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    color: #aaa;
+    font-size: 16px;
+    transition: all 0.2s ease-out;
+    pointer-events: none;
+}
+
+.input-box:focus ~ label,
+.input-box:not(:placeholder-shown) ~ label {
+    top: -10px;
+    left: 10px;
+    font-size: 12px;
+    color: #333;
+}
+
+.input-box:focus {
+    border-color: #007bff;
+}
+
+
+
+
+.context-menu {
+    width: 5%;
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.context-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.context-menu ul li {
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.context-menu ul li:hover {
+    background-color: #e0e0e0;
+    color: #007bff;
+}
+
+.table-responsive {
+    max-height: fit-content;
+    overflow-y: auto;
+    overflow-x: auto;
+    border: 1px solid #ddd;
+}
+
+.table-pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.table-pagination button {
+    width: 100px;
+    padding: 8px 12px;
+    margin: 0 5px;
+    background-color: #e56e07;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.table-pagination button:hover {
+    background-color: #d45407;
+}
+
 
 .context-menu {
     width: 5%;

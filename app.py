@@ -668,7 +668,7 @@ def add_bill_export_page():
 @app.route("/add_product", methods=["POST"])
 def add_product():
     if request.method == "POST":
-        plu = request.form["plu"]
+        # plu = request.form["plu"]
         barcode = request.form["barcode"]
         nameproduct = request.form["nameproduct"]
         groupproduct = request.form["groupproduct"]
@@ -691,6 +691,10 @@ def add_product():
         else:
             path_image = ""
 
+        last_product = db.session.query(Product).order_by(Product.id_product.desc()).first()
+        last_id = last_product.id_product if last_product else 0
+        plu = f"SP000{last_id + 1}"
+        
         new_product = Product(
             plu=plu,
             barcode=barcode,
@@ -705,6 +709,7 @@ def add_product():
             color = color,
             size = size
         )
+
 
         db.session.add(new_product)
         db.session.commit()

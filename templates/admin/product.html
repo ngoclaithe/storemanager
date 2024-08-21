@@ -3,7 +3,12 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+        integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
     <title>Danh sách hàng hóa</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="../../static/css/product.css">
@@ -108,23 +113,23 @@
             <form id="updateProductForm" method="POST">
                 <input type="hidden" id="update_id_product" name="id_product">
                 <div class="form-group-row">
-                    <div class="form-group">
-                        <label for="update_plu">Mã hàng:</label>
-                        <input type="text" id="update_plu" name="plu">
+                    <div class="form-group floating-label">
+                        <input type="text" id="update_plu" class = "input-box" name="plu" placeholder="">
+                        <label for="update_plu" style="color: gray;">Mã hàng</label>
                     </div>
-                    <div class="form-group">
-                        <label for="update_barcode">Mã vạch:</label>
-                        <input type="text" id="update_barcode" name="barcode">
+                    <div class="form-group floating-label">
+                        <input type="text" id="update_barcode" class = "input-box" name="barcode">
+                        <label for="update_barcode" style="color: gray;">Mã vạch</label>
                     </div>
                 </div>
                 <div class="form-group-row">
-                    <div class="form-group">
-                        <label for="update_nameproduct">Tên hàng:</label>
-                        <input type="text" id="update_nameproduct" name="nameproduct">
+                    <div class="form-group floating-label">
+                        <input type="text" class ="input-box" placeholder="" id="update_nameproduct" name="nameproduct">
+                        <label for="update_nameproduct"  style="color: gray;">Tên hàng:</label>
                     </div>
-                    <div class="form-group">
-                        <label for="update_groupproduct">Nhóm hàng:</label>
-                        <select id="update_groupproduct" name="groupproduct" required>
+                    <div class="form-group floating-label">
+
+                        <select class ="input-box" placeholder="" id="update_groupproduct" name="groupproduct" required>
                             <option value="aocontrai">Áo con trai</option>
                             <option value="aocongai">Áo con gái</option>
                             <option value="quancontrai">Quần con trai</option>
@@ -132,51 +137,60 @@
                             <option value="vay">Váy</option>
                             <option value="khac">Khác</option>
                         </select>
+                        <label for="update_groupproduct"  style="color: gray;" >Nhóm hàng:</label>
                     </div>
                 </div>
                 <div class="form-group-row">
-                    <div class="form-group">
-                        <label for="update_brand">Thương hiệu:</label>
-                        <input type="text" id="update_brand" name="brand">
+                    <div class="form-group floating-label">
+
+                        <input type="text" class ="input-box" placeholder="" id="update_brand" name="brand">
+                        <label for="update_brand"  style="color: gray;">Thương hiệu:</label>
                     </div>
-                    <div class="form-group">
-                        <label for="update_costcapital">Giá vốn:</label>
-                        <input type="text" id="update_costcapital" name="costcapital">
-                    </div>
-                </div>
-                <div class="form-group-row">
-                    <div class="form-group">
-                        <label for="update_price">Giá bán:</label>
-                        <input type="text" id="update_price" name="price">
-                    </div>
-                    <div class="form-group">
-                        <label for="update_inventory">Tồn kho:</label>
-                        <input type="text" id="update_inventory" name="inventory">
+                    <div class="form-group floating-label">
+
+                        <input type="text" class ="input-box" placeholder="" id="update_costcapital" name="costcapital">
+                        <label for="update_costcapital"  style="color: gray;">Giá vốn:</label>
                     </div>
                 </div>
                 <div class="form-group-row">
-                    <div class="form-group">
-                        <label for="update_color">Màu:</label>
-                        <input type="text" id="update_color" name="color">
+                    <div class="form-group floating-label">
+
+                        <input type="text" class ="input-box" placeholder="" id="update_price" name="price">
+                        <label for="update_price"  style="color: gray;">Giá bán:</label>
                     </div>
-                    <div class="form-group">
-                        <label for="update_size">Size:</label>
-                        <select id="update_size" name="size" required>
+                    <div class="form-group floating-label">
+
+                        <input type="text" class ="input-box" placeholder="" id="update_inventory" name="inventory">
+                        <label for="update_inventory"  style="color: gray;">Tồn kho:</label>
+                    </div>
+                </div>
+                <div class="form-group-row">
+                    <div class="form-group floating-label">
+
+                        <input type="text" class ="input-box" placeholder="" id="update_color" name="color">
+                        <label for="update_color"  style="color: gray;">Màu:</label>
+                    </div>
+                    <div class="form-group floating-label">
+
+                        <select id="update_size" class ="input-box" placeholder="" name="size" required>
                             <option value="m">M</option>
                             <option value="l">L</option>
                             <option value="xl">XL</option>
                             <option value="xxl">XXL</option>
                         </select>
+                        <label for="update_size"  style="color: gray;">Size:</label>
                     </div>
                 </div>
                 <div class="form-group-row">
-                    <div class="form-group">
-                        <label for="update_unit">Đơn vị:</label>
-                        <input type="text" id="update_unit" name="unit">
+                    <div class="form-group floating-label">
+
+                        <input type="text" class ="input-box" placeholder="" id="update_unit" name="unit">
+                        <label for="update_unit"  style="color: gray;">Đơn vị:</label>
                     </div>
-                    <div class="form-group">
-                        <label for="update_path_image">Ảnh sản phẩm:</label>
-                        <input type="file" id="update_path_image" name="path_image">
+                    <div class="form-group floating-label">
+
+                        <input type="file" class ="input-box" placeholder="" id="update_path_image" name="path_image">
+                        <label for="update_path_image"  style="color: gray;">Ảnh sản phẩm:</label>
                     </div>
                 </div>
                 <button type="submit" id="submitUpdateBtn">Cập Nhật</button>
@@ -190,23 +204,19 @@
             <h2>Thêm Hàng Hóa</h2>
             <form id="addProductForm" method="POST" enctype="multipart/form-data">
                 <div class="form-group-row">
-                    <div class="form-group">
-                        <label for="plu">Mã hàng:</label>
-                        <input type="text" id="plu" name="plu">
+                    <div class="form-group floating-label">
+                        <input type="text" class="input-box" id="barcode" name="barcode" placeholder="">
+                        <label for="barcode" style="color: gray;" >Mã vạch</label>
                     </div>
-                    <div class="form-group">
-                        <label for="barcode">Mã vạch:</label>
-                        <input type="text" id="barcode" name="barcode">
+                    <div class="form-group floating-label">
+                        <input type="text" class="input-box" id="nameproduct" name="nameproduct" placeholder="">
+                        <label for="nameproduct" style="color: gray;">Tên hàng</label>
                     </div>
                 </div>
                 <div class="form-group-row">
-                    <div class="form-group">
-                        <label for="nameproduct">Tên hàng:</label>
-                        <input type="text" id="nameproduct" name="nameproduct">
-                    </div>
-                    <div class="form-group">
-                        <label for="groupproduct">Nhóm hàng:</label>
-                        <select id="groupproduct" name="groupproduct" required>
+                    <div class="form-group floating-label">
+                        <!-- <label for="groupproduct" >Nhóm hàng</label> -->
+                        <select id="groupproduct" class="input-box" name="groupproduct"  required>
                             <option value="aocontrai">Áo con trai</option>
                             <option value="aocongai">Áo con gái</option>
                             <option value="quancontrai">Quần con trai</option>
@@ -215,57 +225,67 @@
                             <option value="khac">Khác</option>
                         </select>
                     </div>
-                </div>
-                <div class="form-group-row">
-                    <div class="form-group">
-                        <label for="brand">Thương hiệu:</label>
-                        <input type="text" id="brand" name="brand">
-                    </div>
-                    <div class="form-group">
-                        <label for="costcapital">Giá vốn:</label>
-                        <input type="text" id="costcapital" name="costcapital">
+                    <div class="form-group floating-label">
+                        <input type="text" class="input-box" id="brand" name="brand" placeholder="">
+                        <label for="brand" style="color: gray;">Thương hiệu</label>
                     </div>
                 </div>
                 <div class="form-group-row">
-                    <div class="form-group">
-                        <label for="price">Giá bán:</label>
-                        <input type="text" id="price" name="price">
+                    <div class="form-group floating-label">
+                        <input type="text" class="input-box" id="costcapital" name="costcapital" placeholder="">
+                        <label for="costcapital" style="color: gray;">Giá vốn</label>
                     </div>
-                    <div class="form-group">
-                        <label for="inventory">Tồn kho:</label>
-                        <input type="text" id="inventory" name="inventory">
+                    <div class="form-group floating-label">
+                        <input type="text" class="input-box" id="price" name="price" placeholder="">
+                        <label for="price" style="color: gray;">Giá bán</label>
                     </div>
                 </div>
                 <div class="form-group-row">
-                    <div class="form-group">
-                        <label for="color">Màu:</label>
-                        <input type="text" id="color" name="color">
+                    <div class="form-group floating-label">
+                        <input type="text" class="input-box" id="inventory" name="inventory" placeholder="">
+                        <label for="inventory" style="color: gray;" >Tồn kho</label>
                     </div>
-                    <div class="form-group">
-                        <label for="size">Size:</label>
-                        <select id="size" name="size" required>
+                    <div class="form-group floating-label">
+                        <input type="text" class="input-box" id="color" name="color" placeholder="">
+                        <label for="color" style="color: gray;">Màu</label>
+                    </div>
+                </div>
+                <div class="form-group-row">
+                    <div class="form-group floating-label">
+                        <!-- <label for="size">Size:</label> -->
+                        <select id="size" class="input-box" name="size" required>
                             <option value="m">M</option>
                             <option value="l">L</option>
                             <option value="xl">XL</option>
                             <option value="xxl">XXL</option>
                         </select>
+
+                    </div>
+                    <div class="form-group floating-label">
+                        <input type="text" class="input-box" id="unit" name="unit" placeholder="">
+                        <label for="unit" style="color: gray;">Đơn vị</label>
                     </div>
                 </div>
                 <div class="form-group-row">
-                    <div class="form-group">
-                        <label for="unit">Đơn vị:</label>
-                        <input type="text" id="unit" name="unit">
-                    </div>
-                    <div class="form-group">
-                        <label for="path_image">Ảnh sản phẩm:</label>
-                        <input type="file" id="path_image" name="path_image">
+                    <div class="form-group floating-label">
+                        <!-- <label for="path_image" >Ảnh sản phẩm</label> -->
+                        <input type="file" class="input-box" id="path_image" name="path_image">
                     </div>
                 </div>
                 <button type="submit">Thêm</button>
             </form>
         </div>
     </div>
-    <!-- <p id="realtime-data"></p> -->
+    <script src="../../static/js/jquery-2.1.0.min.js"></script>
+    <script src="../../static/js/popper.js"></script>
+    <script src="../../static/js/bootstrap.min.js"></script>
+    <script src="../../static/js/scrollreveal.min.js"></script>
+    <script src="../../static/js/waypoints.min.js"></script>
+    <script src="../../static/js/jquery.counterup.min.js"></script>
+    <script src="../../static/js/imgfix.min.js"></script>
+    <script src="../../static/js/mixitup.js"></script>
+    <script src="../../static/js/accordions.js"></script>
+    <script src="../../static/js/custom.js"></script>
     <script src="../../static/script/product.js"></script>
     <script src="../../static/script/script.js"></script>
 </body>
