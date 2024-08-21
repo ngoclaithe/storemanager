@@ -42,7 +42,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{os.path.abspath(db_path)}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 db.init_app(app)
-
+migrate = Migrate(app, db)
 # print(os.path.abspath(app.config["SQLALCHEMY_DATABASE_URI"].replace("sqlite:///", "")))
 
 if not os.path.exists(db_path):
@@ -1416,8 +1416,6 @@ def salary_staff_calcu():
         
         staff_result["total_shifts"] = total_shifts
         results.append(staff_result)
-    
-    print(results)
     return jsonify(results)
 @app.route('/notification', methods=['GET'])
 def get_notifications():

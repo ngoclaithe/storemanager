@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,8 +15,9 @@
             margin: 0;
             font-family: Arial, sans-serif;
         }
+
         .container {
-            background-color: rgba(255, 255, 255, 0.8); 
+            background-color: rgba(255, 255, 255, 0.8);
             padding: 20px;
             border-radius: 8px;
             max-width: 400px;
@@ -24,20 +26,25 @@
             top: 50%;
             transform: translateY(-50%);
         }
+
         .container h2 {
             text-align: center;
         }
+
         .container form {
             display: flex;
             flex-direction: column;
         }
+
         .container label {
             margin-top: 10px;
         }
+
         .container input {
             padding: 10px;
             margin-top: 5px;
         }
+
         .container button {
             margin-top: 20px;
             padding: 10px;
@@ -47,6 +54,7 @@
             border-radius: 5px;
             cursor: pointer;
         }
+
         .container .switch-button {
             margin-top: 10px;
             padding: 10px;
@@ -56,14 +64,19 @@
             border-radius: 5px;
             cursor: pointer;
         }
+
         .logo {
             position: absolute;
             top: 10px;
-            left: 10px;
+            left: 50%;
+            transform: translateX(-50%);
         }
+
         .logo img {
-            height: 50px; 
+            border-radius: 55px;
+            height: 200px;
         }
+
         .error-message {
             color: red;
             text-align: center;
@@ -79,7 +92,7 @@
                 method: form.method,
                 body: formData
             });
-            
+
             if (response.status === 400) {
                 document.getElementById('error-message').innerText = "Tên đăng nhập hoặc mật khẩu chưa chính xác";
             } else {
@@ -88,6 +101,7 @@
         }
     </script>
 </head>
+
 <body>
     <div class="logo">
         <a href="{{ url_for('login') }}">
@@ -112,4 +126,5 @@
         </form>
     </div>
 </body>
+
 </html>
