@@ -172,16 +172,11 @@
             })
                 .then(response => {
                     if (response.status === 200) {
-                        sessionStorage.setItem('toastr_success', 'Đăng xuất thành công!');
-                        sessionStorage.setItem('toastr_title', 'Thành công');
                         toastr.success('Đăng xuất thành công!', 'Thành công');
                         setTimeout(function () {
                             window.location.href = '/login_page';
-            }, 2000);
+                        }, 2000);
                     } else {
-
-                        sessionStorage.setItem('toastr_error', 'Đăng xuất không thành công!');
-                        sessionStorage.setItem('toastr_title', 'Thất bại');
                         toastr.error('Đăng xuất không thành công!', 'Thất bại');
                     }
                 })
