@@ -7,6 +7,7 @@
     <title>Quản lý tài khoản</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="../../static/css/account.css">
+    <link rel="stylesheet" href="../../static/css/base.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         .user-info {
@@ -65,22 +66,8 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-custom navbar-expand-lg">
-        <a class="navbar-brand" href="#" id="navbarBrand">
-            <img src="../../static/img/logo_login.png" alt="Logo" style="width: 40px; margin-right: 10px;">
-            Thanh Hải Store
-            <img src="../../static/img/more.png" alt="More" id="toggleSidebar"
-                style="width: 40px; margin-right: 10px; cursor: pointer;">
-        </a>
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="/account">
-                    <img src="../../static/img/user.png" alt="Tài khoản" class="account-icon">
-                </a>
-            </li>
-        </ul>
-    </nav>
 
+    {% include 'navbar.html' %}
     <div class="sidebar" id="sidebar">
         <a href="/overview"><i class="fas fa-tachometer-alt"></i> Tổng quan</a>
         <a href="/product"><i class="fas fa-box-open"></i> Hàng hóa</a>
@@ -117,12 +104,16 @@
     </div>
     <script>
         var userType = "{{user_type}}";
+        console.log(userType);
+        const notification2 = document.getElementById('notification-icon');
         document.getElementById("navbarBrand").addEventListener("click", function (event) {
             event.preventDefault();
             if (userType === "admin") {
                 window.location.href = '/overview';
+                notification2.style.display = 'block';
             } else {
                 window.location.href = '/staff_timekeeping';
+                notification2.style.display = 'none';
             }
         });
         document.getElementById("change-password-form").addEventListener("submit", function (event) {

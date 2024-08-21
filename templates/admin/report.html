@@ -9,31 +9,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="../../static/css/report.css">
     <link rel="stylesheet" href="../../static/css/noti.css">
+    <link rel="stylesheet" href="../../static/css/base.css">    
 </head>
 
 <body>
-    <nav class="navbar navbar-custom navbar-expand-lg">
-        <a class="navbar-brand" href="#">
-            <img src="../../static/img/logo_login.png" alt="Logo" style="width: 40px; margin-right: 10px;">
-            Thanh Hải Store
-            <img src="../../static/img/more.png" alt="More" id="toggleSidebar"
-                style="width: 40px; margin-right: 10px; cursor: pointer;">
-        </a>
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="#">
-                    <div id="notification-icon">
-                        <img src="../../static/img/notification.png" alt="Thông báo" class="notification-icon">
-                    </div>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/account">
-                    <img src="../../static/img/user.png" alt="Tài khoản" class="account-icon">
-                </a>
-            </li>
-        </ul>
-    </nav>
+    {% include 'navbar.html' %}
     <div class="sidebar" id="sidebar">
         <a href="/overview"><i class="fas fa-tachometer-alt"></i> Tổng quan</a>
         <a href="/product"><i class="fas fa-box-open"></i> Hàng hóa</a>
