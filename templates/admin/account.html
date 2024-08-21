@@ -11,8 +11,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         .user-info {
-            margin-top: 280px;
-            margin: 0 auto;
+            margin-top: 180px;
+            margin-left: 800px;
+            /* margin: 0 auto; */
             max-width: 400px;
             padding: 20px;
             background-color: #fff;
@@ -44,7 +45,7 @@
             cursor: pointer;
             transition: background-color 0.3s ease;
             width: 200px;
-            margin-left: 120px;
+            margin-left: 60px;
         }
 
         button[type="submit"]:hover {
@@ -76,32 +77,32 @@
         <a href="/report"><i class="fas fa-chart-line"></i> Báo cáo</a>
         <a href="/staff"><i class="fas fa-users"></i> Nhân viên</a>
     </div>
-    <div class="content" id="content">
-        <div class="card-container">
-            <div class="main-content">
-                <!-- <div class="user-info"> -->
-                <h1>Thông tin tài khoản</h1>
-                <label for="username">Tên người dùng:</label>
-                <p id="username" style="font-weight: bold; font-size: 18px; color: #333;">{{ user_name }}</p>
-                <label for="usertype">Loại tài khoản:</label>
-                <p id="usertype" style="font-weight: bold; font-size: 18px; color: #333;">{{ user_type }}</p>
-                <label for="email">Email:</label>
-                <p id="email" style="font-size: 16px; color: #333;">{{ email }}</p>
-                <form id="change-password-form">
-                    <label for="old_password" style="font-size: 18px; color: #333;">Mật khẩu cũ:</label>
-                    <input type="password" id="old_password" name="old_password" required><br>
-                    <label for="new_password" style="font-size: 18px; color: #333;">Mật khẩu mới:</label>
-                    <input type="password" id="new_password" name="new_password" required><br>
-                    <button type="submit">Thay đổi mật khẩu</button>
-                    <p class="success-message">{{ password_message }}</p>
-                </form>
-                <form id="logout-form" method="get" action="/logout">
-                    <button type="submit" class="logout-button">Đăng xuất</button>
-                </form>
-                <!-- </div> -->
-            </div>
+    <!-- <div class="content" id="content"> -->
+        <!-- <div class="card-container"> -->
+        <!-- <div class="main-content"> -->
+        <div class="user-info">
+            <h1>Thông tin tài khoản</h1>
+            <label for="username">Tên người dùng:</label>
+            <p id="username" style="font-weight: bold; font-size: 18px; color: #333;">{{ user_name }}</p>
+            <label for="usertype">Loại tài khoản:</label>
+            <p id="usertype" style="font-weight: bold; font-size: 18px; color: #333;">{{ user_type }}</p>
+            <label for="email">Email:</label>
+            <p id="email" style="font-size: 16px; color: #333;">{{ email }}</p>
+            <form id="change-password-form">
+                <label for="old_password" style="font-size: 18px; color: #333;">Mật khẩu cũ:</label>
+                <input type="password" id="old_password" name="old_password" required><br>
+                <label for="new_password" style="font-size: 18px; color: #333;">Mật khẩu mới:</label>
+                <input type="password" id="new_password" name="new_password" required><br>
+                <button type="submit">Thay đổi mật khẩu</button>
+                <p class="success-message">{{ password_message }}</p>
+            </form>
+            <form id="logout-form" method="get" action="/logout">
+                <button type="submit" class="logout-button">Đăng xuất</button>
+            </form>
+            <!-- </div> -->
         </div>
-    </div>
+        <!-- </div> -->
+    <!-- </div> -->
     <script>
         var userType = "{{user_type}}";
         console.log(userType);

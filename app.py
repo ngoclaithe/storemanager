@@ -68,11 +68,11 @@ def home():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
+        print(request.form["password"])
         email = request.form["email"]
         password = md5_hash(request.form["password"])
         user = Register.query.filter_by(email=email, password=password).first()
         print(email)
-        print(user.usertype)
 
         if user:
             session["user_id"] = user.id
@@ -93,7 +93,8 @@ def register():
         email = request.form["email"]
         secret_question = request.form["secretquestion"]
         password = md5_hash(request.form["password"])
-        usertype = "admin"
+        usertype = request.form["usertype"]
+        phone = request.form["phone"]
         if len(password) < 8:
             return (
                 jsonify({"error": "Password must be at least 8 characters long"}),
@@ -110,12 +111,20 @@ def register():
             password=password,
             usertype=usertype,
             secret_question=secret_question,
+            phone = phone,
+        )
+        new_staff = Staff(
+            type_staff = usertype,
+            phone = phone,
+            name_staff = user
+
         )
         db.session.add(new_user)
+        db.session.add(new_staff)
         db.session.commit()
 
-        return redirect(url_for("login"))
-    return render_template("register.html")
+        return jsonify({"success": "Đăng ký thành công"}), 200
+    return render_template("login.html")
 
 
 @app.route("/login_page")
