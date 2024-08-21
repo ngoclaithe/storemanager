@@ -37,7 +37,8 @@ document.getElementById('updateProductForm').addEventListener('submit', function
     })
     .then(response => {
         if (response.ok) {
-            alert("Sửa hàng thành công!");
+            sessionStorage.setItem('toastr_success', 'Sửa hàng thành công!');
+            sessionStorage.setItem('toastr_title', 'Thành công');
             location.reload();
         } else {
             throw new Error('Xảy ra lỗi khi cập nhật đăng ký.');
@@ -54,7 +55,8 @@ function deleteProduct(idProduct) {
         })
             .then(response => {
                 if (response.ok) {
-                    alert("Xóa thành công!");
+                    sessionStorage.setItem('toastr_success', 'Xóa thành công!');
+                    sessionStorage.setItem('toastr_title', 'Thành công');
                     location.reload();
                 } else {
                     throw new Error('Xảy ra lỗi khi xóa sản phẩm.');
@@ -80,7 +82,9 @@ addProductForm.addEventListener('submit', function (event) {
         body: formData
     }).then(response => {
         if (response.status === 200) {
-            alert("Sản phẩm đã được thêm thành công");
+            // sessionStorage.setItem('toastr_success', 'Sản phẩm đã được thêm thành công!');
+            // sessionStorage.setItem('toastr_title', 'Thành công');
+            toastr.success('Thêm thành công!', 'Thành công');
         } else {
             console.error('Failed to add product');
         }
@@ -111,7 +115,7 @@ document.getElementById("exportExcelBtn").addEventListener("click", function () 
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Có lỗi xảy ra khi xuất file CSV.');
+            toastr.error('Có lỗi xảy ra khi xuất file CSV!', 'Thành công');
         });
 });
 document.addEventListener('DOMContentLoaded', function () {

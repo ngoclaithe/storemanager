@@ -92,14 +92,12 @@ def register():
         user = request.form["user"]
         email = request.form["email"]
         secret_question = request.form["secretquestion"]
-        password = md5_hash(request.form["password"])
+        password = request.form["password"]
         usertype = request.form["usertype"]
         phone = request.form["phone"]
         if len(password) < 8:
-            return (
-                jsonify({"error": "Password must be at least 8 characters long"}),
-                400,
-            )
+            return "Độ dài mật khẩu phải lớn hơn hoặc bằng 8 ký tự", 400
+        password = md5_hash(password)
 
         existing_user = Register.query.filter_by(email=email).first()
         if existing_user:
@@ -123,7 +121,7 @@ def register():
         db.session.add(new_staff)
         db.session.commit()
 
-        return jsonify({"success": "Đăng ký thành công"}), 200
+        return "Đăng ký thành công", 200
     return render_template("login.html")
 
 

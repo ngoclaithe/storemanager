@@ -29,10 +29,11 @@ function submitForm() {
         body: JSON.stringify(jsonObject)
     }).then(response => {
         if (response.status === 200) {
-            alert("Phiếu thu chi đã được thêm thành công");
+            sessionStorage.setItem('toastr_success', 'Phiếu thu chi đã được lưu thành công!');
+            sessionStorage.setItem('toastr_title', 'Thành công');
             location.reload();
         } else {
-            alert('Thêm phiếu thu chi thất bại');
+            toastr.error('Thêm phiếu thu chi thất bại','Thất bại');
         }
     }).catch(error => {
         console.error('Error:', error);
@@ -49,9 +50,12 @@ document.getElementById("exportFile").addEventListener("click", function () {
     })
         .then(response => {
             if (response.ok) {
+                toastr.success('Xuất CSV thành công', '');
                 return response.blob();
             } else {
+                toastr.error('Xuất CSV không thành công', '');
                 throw new Error("Xuất CSV không thành công.");
+                
             }
         })
         .then(blob => {
@@ -65,7 +69,7 @@ document.getElementById("exportFile").addEventListener("click", function () {
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Có lỗi xảy ra khi xuất file CSV.');
+            toastr.error('Có lỗi xảy ra khi xuất file CSV.', '', {timeOut: 3000})
         });
 });
 
@@ -136,10 +140,11 @@ document.addEventListener('DOMContentLoaded', function () {
             body: JSON.stringify(jsonObject)
         }).then(response => {
             if (response.status === 200) {
-                // alert("Phiếu thu chi đã được cập nhật thành công");
+                sessionStorage.setItem('toastr_success', 'Phiếu thu chi đã được cập nhất thành công!');
+                sessionStorage.setItem('toastr_title', 'Thành công');
                 location.reload();
             } else {
-                alert('Cập nhật phiếu thu chi thất bại');
+                toastr.info('Cập nhật phiếu thu chi thất bại','Thông tin');
             }
         }).catch(error => {
             console.error('Error:', error);
@@ -153,10 +158,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     method: 'DELETE'
                 }).then(response => {
                     if (response.status === 200) {
-                        // alert("Phiếu thu chi đã được xóa thành công");
+                        sessionStorage.setItem('toastr_success', 'Phiếu thu chi đã được lưu thành công!');
+                        sessionStorage.setItem('toastr_title', 'Thành công');
                         location.reload();
                     } else {
-                        alert('Xóa phiếu thu chi thất bại');
+                        toastr.info('Xóa phiếu thu chi thất bại','Thông tin');
                     }
                 }).catch(error => {
                     console.error('Error:', error);

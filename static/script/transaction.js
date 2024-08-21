@@ -89,9 +89,11 @@ function deleteBill(billId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+            sessionStorage.setItem('toastr_success', 'Xóa hóa đơn thành công!');
+            sessionStorage.setItem('toastr_title', 'Thành công');
             location.reload();
         } else {
-            alert('Xóa hóa đơn thất bại');
+            toastr.error('Xóa hóa đơn thất bại','');
         }
     })
     .catch((error) => {

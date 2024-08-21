@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../../static/css/account.css">
     <link rel="stylesheet" href="../../static/css/base.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
     <style>
         .user-info {
             margin-top: 180px;
@@ -103,6 +104,11 @@
         </div>
         <!-- </div> -->
     <!-- </div> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.fonts.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
         var userType = "{{user_type}}";
         console.log(userType);
@@ -117,6 +123,24 @@
                 notification2.style.display = 'none';
             }
         });
+        $(document).ready(function () {
+            var successMessage = sessionStorage.getItem('toastr_success');
+            var errorMessage = sessionStorage.getItem('toastr_error');
+            var toastrTitle = sessionStorage.getItem('toastr_title');
+
+            if (successMessage) {
+                toastr.success(successMessage, toastrTitle);
+                sessionStorage.removeItem('toastr_success');
+                sessionStorage.removeItem('toastr_title');
+            }
+
+            if (errorMessage) {
+                toastr.error(errorMessage, toastrTitle);
+                sessionStorage.removeItem('toastr_error');
+                sessionStorage.removeItem('toastr_title');
+            }
+        });
+
         document.getElementById("change-password-form").addEventListener("submit", function (event) {
             event.preventDefault();
             var formData = new FormData(this);
@@ -126,10 +150,14 @@
             })
                 .then(response => {
                     if (response.status === 200) {
-                        alert("Đã thay đổi mật khẩu thành công");
+                        // alert("Đã thay đổi mật khẩu thành công");
+                        sessionStorage.setItem('toastr_success', 'Đã thay đổi mật khẩu thành công!');
+                        sessionStorage.setItem('toastr_title', 'Thành công');
                         location.reload();
                     } else {
-                        alert("Thay đổi mật khẩu không thành công");
+                        // alert("Thay đổi mật khẩu không thành công");
+                        sessionStorage.setItem('toastr_error', 'Thay đổi mật khẩu không thành công!');
+                        sessionStorage.setItem('toastr_title', 'Thất bại');
                     }
                 })
                 .catch(error => {
@@ -144,10 +172,17 @@
             })
                 .then(response => {
                     if (response.status === 200) {
-                        // alert("Đăng xuất thành công");
-                        window.location.href = '/login_page';
+                        sessionStorage.setItem('toastr_success', 'Đăng xuất thành công!');
+                        sessionStorage.setItem('toastr_title', 'Thành công');
+                        toastr.success('Đăng xuất thành công!', 'Thành công');
+                        setTimeout(function () {
+                            window.location.href = '/login_page';
+            }, 2000);
                     } else {
-                        alert("Đăng xuất không thành công");
+
+                        sessionStorage.setItem('toastr_error', 'Đăng xuất không thành công!');
+                        sessionStorage.setItem('toastr_title', 'Thất bại');
+                        toastr.error('Đăng xuất không thành công!', 'Thất bại');
                     }
                 })
                 .catch(error => {
@@ -186,6 +221,8 @@
         }
 
         handleSidebar();
+
+        
     </script>
 </body>
 

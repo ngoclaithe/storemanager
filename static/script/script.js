@@ -40,3 +40,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+$(document).ready(function () {
+    var successMessage = sessionStorage.getItem('toastr_success');
+    var errorMessage = sessionStorage.getItem('toastr_error');
+    var toastrTitle = sessionStorage.getItem('toastr_title');
+
+    if (successMessage) {
+        toastr.success(successMessage, toastrTitle);
+        sessionStorage.removeItem('toastr_success');
+        sessionStorage.removeItem('toastr_title');
+    }
+
+    if (errorMessage) {
+        toastr.error(errorMessage, toastrTitle);
+        sessionStorage.removeItem('toastr_error');
+        sessionStorage.removeItem('toastr_title');
+    }
+});

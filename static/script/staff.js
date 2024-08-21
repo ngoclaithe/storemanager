@@ -62,7 +62,9 @@ document.getElementById('reportSelect').addEventListener('change', function () {
             var to_day = document.getElementById('to_day').value;
 
             if (!from_day || !to_day) {
-                alert('Vui lòng chọn cả hai ngày.');
+
+                // toastr.success('Có lỗi xảy ra khi xuất file CSV!', 'Thành công');
+                toastr.warning('Vui lòng chọn cả hai ngày.','Cảnh báo');
                 return;
             }
 
@@ -72,7 +74,7 @@ document.getElementById('reportSelect').addEventListener('change', function () {
             var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
             if (diffDays > 30) {
-                alert('Phạm vi ngày không được quá 30 ngày. Vui lòng chọn lại.');
+                toastr.warning('Phạm vi ngày không được quá 30 ngày.','Cảnh báo');
                 return;
             }
 
@@ -230,10 +232,11 @@ document.getElementById('addStaffForm').addEventListener('submit', function (eve
         .then(result => {
             if (result.success) {
                 $('#addStaffModal').modal('hide');
-                alert(result.message);
+                toastr.success(result.message, '', {timeOut: 3000})
                 document.getElementById('reportSelect').dispatchEvent(new Event('change'));
             } else {
-                alert('Có lỗi xảy ra: ' + result.message);
+                
+                toastr.error('Nội dung lỗi.', 'Gặp lỗi!')
             }
         })
         .catch(error => console.error('Error:', error));
