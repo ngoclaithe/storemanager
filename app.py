@@ -30,7 +30,7 @@ from werkzeug.utils import secure_filename
 from sqlalchemy.exc import ProgrammingError
 from flask_migrate import Migrate
 from sqlalchemy import func, extract
-
+import uuid
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -467,36 +467,26 @@ def add_bill_import():
         db.session.commit()
 
         return "Bill added successfully", 200
+def generate_code_bill():
+    return str(uuid.uuid4())
 @app.route("/add_bill", methods=["POST"])
 def add_bill():
     if request.method == "POST":
         data = request.json
+        print(data)
         items = data.get("items")
         if not items:
             return "Missing items", 400
 
-        id_product = items[0].get("productId")
-        type_customer = items[0].get("typeCustomer")
-        quantity = items[0].get("quantity")
         totalprice = data.get("totalprice")
         discount = data.get("discount")
         afterdiscount = data.get("afterdiscount")
         customerpaid = data.get("customerpaid")
         name_customer = data.get("name_customer")
         phone_customer = data.get("phone_customer")
-
-        product = Product.query.filter_by(id_product=id_product).first()
-        if product is None:
-            return "Product not found", 404
-
-        if quantity > product.inventory:
-            return "Failed to add bill: Quantity exceeds available inventory", 400
-
-        product.inventory -= quantity
-        db.session.add(product)
+        type_customer = items[0].get("typeCustomer")  
 
         customer = Customer.query.filter_by(phone_customer=phone_customer).first()
-
         if customer is None:
             new_customer = Customer(
                 name_customer=name_customer,
@@ -504,24 +494,43 @@ def add_bill():
                 type_customer=type_customer,
             )
             db.session.add(new_customer)
+            db.session.commit()
 
-        new_bill = Bill(
-            id_product=id_product,
-            quantity=quantity,
-            type_customer=type_customer,
-            totalprice=totalprice,
-            discount=discount,
-            afterdiscount=afterdiscount,
-            customerpaid=customerpaid,
-            phone_customer=phone_customer,
-            type_transaction = "Bán Hàng"
-        )
+        code_bill = generate_code_bill()  
+        for item in items:
+            id_product = item.get("productId")
+            quantity = item.get("quantity")
+            price = item.get("price")
+            discount = item.get("discount")
+            total_price = item.get("totalPrice")
+            total_price_after_discount = item.get("totalPriceAfterDiscount")
 
-        db.session.add(new_bill)
+            product = Product.query.filter_by(id_product=id_product).first()
+            if product is None:
+                return f"Product {id_product} not found", 404
+
+            if quantity > product.inventory:
+                return f"Failed to add bill: Quantity exceeds available inventory for product {id_product}", 400
+
+            product.inventory -= quantity
+            db.session.add(product)
+            new_bill = Bill(
+                code_bill=code_bill,
+                id_product=id_product,
+                quantity=quantity,
+                discount=discount,
+                totalprice=totalprice,
+                afterdiscount=afterdiscount,
+                customerpaid=customerpaid,
+                phone_customer=phone_customer,
+                type_transaction="Bán Hàng",
+                type_customer=type_customer,
+            )
+            db.session.add(new_bill)
+
         db.session.commit()
 
         return "Bill added successfully", 200
-
 
 @app.route("/delete_bill", methods=["DELETE"])
 def delete_bill():
@@ -1434,7 +1443,7 @@ def salary_staff_calcu():
 @app.route('/notification', methods=['GET'])
 def get_notifications():
     now = datetime.utcnow()
-    recent_bills = Bill.query.order_by(Bill.date.desc()).limit(5).all()
+    recent_bills = Bill.query.order_by(Bill.date.desc()).limit(10).all()
 
     notifications = []
     for bill in recent_bills:

@@ -36,7 +36,8 @@ class Bill(db.Model):
     __tablename__ = 'bill'
     
     id_bill = db.Column(db.Integer, primary_key=True)
-    quantity = db.Column(db.Integer, nullable=False)
+    code_bill = db.Column(db.Text, nullable=True)
+    quantity = db.Column(db.Integer, nullable=True)
     date = db.Column(db.DateTime, default=lambda: datetime.utcnow().replace(microsecond=0), nullable=False)
     type_transaction = db.Column(db.Text, nullable=True)
     type_customer = db.Column(db.Text, nullable=True)
@@ -100,3 +101,4 @@ class Supplier(db.Model):
     email_supplier = db.Column(db.Text, nullable=True)
     tax_code = db.Column(db.Text, nullable=True)
     place_supplier = db.Column(db.Text, nullable=True)
+
